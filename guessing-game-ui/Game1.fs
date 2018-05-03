@@ -32,7 +32,7 @@
             let keyboard = Keyboard.GetState()
 
             let pressed = keyboard.GetPressedKeys()
-            pressed |> Array.filter (fun o -> List.contains o pressedKeys|> not && keyEvents.ContainsKey o)
+            pressed |> Array.filter (fun o -> List.contains o pressedKeys |> not && keyEvents.ContainsKey o)
                 |> Array.iter (fun o ->
                     pressedKeys <- o::pressedKeys
                     keyEvents.[o] ())
