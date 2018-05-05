@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\game-wrapper\game-wrapper.fsproj" />
+    <ProjectReference Include="..\game-core\game-core.fsproj" />
   </ItemGroup>
 
 </Project>

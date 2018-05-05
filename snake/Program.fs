@@ -1,5 +1,5 @@
 ﻿open System
-open GameWrapper
+open GameCore
 open Microsoft.Xna.Framework.Input
 
 (*
@@ -133,6 +133,6 @@ let getView gameState =
 [<EntryPoint>]
 let main _ =
     let config = { loadAssets = assets; initialState = initialState; updateState = updateState; getView = getView }
-    use game = new GameWrapper<GameState> (config)
+    use game = new GameCore<GameState> (config)
     game.Run()
     0

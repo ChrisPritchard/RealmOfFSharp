@@ -7,7 +7,7 @@
     (except for the Keys enum and a reference to the font asset) MonoGame agnostic
 *)
 
-open GameWrapper
+open GameCore
 open Microsoft.Xna.Framework.Input
 
 let assets = [
@@ -54,11 +54,11 @@ let getView gameState =
                 { baseText with text = sprintf "My guess is %i" gameState.guess; position = (50.0,50.0) };
                 { baseText with text = "Press Up if too low, Down if too high, or 'C' if correct"; position = (50.0,80.0); scale = 0.3 };
             ]
-    text, ([]:ImageInfo list)
+    text, []
 
 [<EntryPoint>]
 let main _ =
     let config = { loadAssets = assets; initialState = initialState; updateState = updateState; getView = getView }
-    use game = new GameWrapper<CountingGameState> (config)
+    use game = new GameCore<CountingGameState> (config)
     game.Run()
     0

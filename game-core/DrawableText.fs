@@ -1,6 +1,6 @@
-namespace GameWrapper
+namespace GameCore
 
-type TextInfo = {
+type DrawableText = {
     fontKey: string
     text: string
     position: float * float

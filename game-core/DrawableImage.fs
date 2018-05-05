@@ -1,6 +1,6 @@
-namespace GameWrapper
+namespace GameCore
 
-type ImageInfo = {
+type DrawableImage = {
     textureKey: string
     position: float * float
     size: float * float

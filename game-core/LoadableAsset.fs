@@ -1,6 +1,6 @@
-namespace GameWrapper
+namespace GameCore
 
-type AssetInfo = {
+type LoadableAsset = {
     key: string;
     assetType: AssetType;
     path: string

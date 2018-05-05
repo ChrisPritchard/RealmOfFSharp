@@ -1,4 +1,4 @@
-namespace GameWrapper
+namespace GameCore
 open Microsoft.Xna.Framework.Input
 
 type KeyboardInfo = {

@@ -1,10 +1,10 @@
-﻿namespace GameWrapper
+﻿namespace GameCore
 
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics;
 open Microsoft.Xna.Framework.Input;
 
-type GameWrapper<'TState> (config: GameConfig<'TState>) as this = 
+type GameCore<'TState> (config: GameConfig<'TState>) as this = 
     inherit Game()
 
     do new GraphicsDeviceManager(this) |> ignore
@@ -14,7 +14,7 @@ type GameWrapper<'TState> (config: GameConfig<'TState>) as this =
 
     let mutable keyboardInfo = { pressed = []; keysDown = []; keysUp = [] }
     let mutable gameState = config.initialState
-    let mutable currentView: TextInfo list * ImageInfo list = [],[]
+    let mutable currentView: DrawableText list * DrawableImage list = [],[]
 
     let mutable spriteBatch = Unchecked.defaultof<SpriteBatch>
 

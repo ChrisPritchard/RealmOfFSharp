@@ -1,4 +1,4 @@
-namespace GameWrapper
+namespace GameCore
 
 type RunState = {
     elapsed: float

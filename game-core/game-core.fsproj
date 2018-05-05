@@ -5,13 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="AssetInfo.fs" />
-    <Compile Include="TextInfo.fs" />
-    <Compile Include="ImageInfo.fs" />
+    <Compile Include="LoadableAsset.fs" />
+    <Compile Include="DrawableText.fs" />
+    <Compile Include="DrawableImage.fs" />
     <Compile Include="KeyboardInfo.fs" />
     <Compile Include="RunState.fs" />
     <Compile Include="GameConfig.fs" />
-    <Compile Include="GameWrapper.fs" />
+    <Compile Include="GameCore.fs" />
   </ItemGroup>
 
   <ItemGroup>
