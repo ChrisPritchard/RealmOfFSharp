@@ -1,8 +1,8 @@
 namespace GameWrapper
 
 type TextInfo = {
-        fontKey: string
-        text: string
-        position: float * float
-        scale: float
-    }
+    fontKey: string
+    text: string
+    position: float * float
+    scale: float
+}

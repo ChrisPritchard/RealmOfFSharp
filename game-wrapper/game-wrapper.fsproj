@@ -7,6 +7,7 @@
   <ItemGroup>
     <Compile Include="AssetInfo.fs" />
     <Compile Include="TextInfo.fs" />
+    <Compile Include="ImageInfo.fs" />
     <Compile Include="KeyboardInfo.fs" />
     <Compile Include="RunState.fs" />
     <Compile Include="GameConfig.fs" />

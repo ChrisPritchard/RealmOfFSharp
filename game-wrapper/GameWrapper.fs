@@ -9,11 +9,12 @@ type GameWrapper<'TState> (config: GameConfig<'TState>) as this =
 
     do new GraphicsDeviceManager(this) |> ignore
 
+    let mutable textureAssets = Map.empty<string, Texture2D>
     let mutable fontAssets = Map.empty<string, SpriteFont>
 
     let mutable keyboardInfo = { pressed = []; keysDown = []; keysUp = [] }
     let mutable gameState = config.initialState
-    let mutable currentView: TextInfo list = []
+    let mutable currentView: TextInfo list * ImageInfo list = [],[]
 
     let mutable spriteBatch = Unchecked.defaultof<SpriteBatch>
 
@@ -25,27 +26,42 @@ type GameWrapper<'TState> (config: GameConfig<'TState>) as this =
             keysUp = Set.difference (existing.pressed |> Set.ofList) pressed |> Set.toList
         }
 
-    let asVector2 (position: float * float) = new Vector2(fst position |> float32, snd position |> float32)
+    let asVector2 (x:float,y:float) = new Vector2(float32 x, float32 y)
+    let asRectangle (x:float,y:float) (width:float,height:float) = 
+        new Rectangle (int x, int y, int width, int height)
 
     override __.LoadContent() = 
         spriteBatch <- new SpriteBatch(this.GraphicsDevice)
+        textureAssets <- config.loadAssets
+            |> List.filter (fun a -> a.assetType = AssetType.Texture) 
+            |> List.map (fun t -> t.key, this.Content.Load<Texture2D>(t.path))
+            |> Map.ofList
         fontAssets <- config.loadAssets 
-            |> List.filter (fun o -> o.assetType = AssetType.Font) 
+            |> List.filter (fun a -> a.assetType = AssetType.Font) 
             |> List.map (fun f -> f.key, this.Content.Load<SpriteFont>(f.path))
             |> Map.ofList
 
     override __.Update(gameTime) =
         keyboardInfo <- updateKeyboardInfo (Keyboard.GetState()) keyboardInfo
-        
-        let runState = { keyboard = keyboardInfo; elapsed = gameTime.ElapsedGameTime.TotalMilliseconds }
+        let runState = { keyboard = keyboardInfo; elapsed = gameTime.TotalGameTime.TotalMilliseconds }
         gameState <- config.updateState runState gameState
         currentView <- config.getView gameState
 
     override __.Draw(_) =
         this.GraphicsDevice.Clear Color.White
         spriteBatch.Begin()
-        
+
+        currentView
+            |> snd
+            |> List.map (fun d -> d,textureAssets.[d.textureKey])
+            |> List.iter (fun (d,texture) ->
+                spriteBatch.Draw(
+                    texture, asRectangle d.position d.size, 
+                    Unchecked.defaultof<System.Nullable<Rectangle>>, 
+                    Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 0.5f))
+
         currentView 
+            |> fst
             |> List.map (fun d -> d,fontAssets.[d.fontKey])
             |> List.iter (fun (d,font) ->
                 spriteBatch.DrawString(

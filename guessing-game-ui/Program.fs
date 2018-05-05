@@ -42,17 +42,19 @@ let updateState (runState: RunState) gameState =
 
 let getView gameState = 
     let baseText = { fontKey = "default"; text = ""; position = (0.0,0.0); scale = 0.4 }
-    if gameState.win then
-        [
-            { baseText with text = "Excellent!"; position = (50.0,50.0); scale = 0.8 };
-            { baseText with text = sprintf "I took %i guesses" gameState.guesses; position = (50.0,100.0) };
-            { baseText with text = "Press 'Y' to play again"; position = (50.0,130.0) }
-        ]
-    else
-        [
-            { baseText with text = sprintf "My guess is %i" gameState.guess; position = (50.0,50.0) };
-            { baseText with text = "Press Up if too low, Down if too high, or 'C' if correct"; position = (50.0,80.0); scale = 0.3 };
-        ]
+    let text = 
+        if gameState.win then
+            [
+                { baseText with text = "Excellent!"; position = (50.0,50.0); scale = 0.8 };
+                { baseText with text = sprintf "I took %i guesses" gameState.guesses; position = (50.0,100.0) };
+                { baseText with text = "Press 'Y' to play again"; position = (50.0,130.0) }
+            ]
+        else
+            [
+                { baseText with text = sprintf "My guess is %i" gameState.guess; position = (50.0,50.0) };
+                { baseText with text = "Press Up if too low, Down if too high, or 'C' if correct"; position = (50.0,80.0); scale = 0.3 };
+            ]
+    text, ([]:ImageInfo list)
 
 [<EntryPoint>]
 let main _ =
