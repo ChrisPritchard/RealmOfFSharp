@@ -34,9 +34,11 @@ type GameWrapper<'TState> (config: GameConfig<'TState>) as this =
             |> List.map (fun f -> f.key, this.Content.Load<SpriteFont>(f.path))
             |> Map.ofList
 
-    override __.Update(_) =
+    override __.Update(gameTime) =
         keyboardInfo <- updateKeyboardInfo (Keyboard.GetState()) keyboardInfo
-        gameState <- config.updateState keyboardInfo gameState
+        
+        let runState = { keyboard = keyboardInfo; elapsed = gameTime.ElapsedGameTime.TotalMilliseconds }
+        gameState <- config.updateState runState gameState
         currentView <- config.getView gameState
 
     override __.Draw(_) =

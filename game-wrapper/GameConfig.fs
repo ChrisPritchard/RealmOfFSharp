@@ -1,8 +1,8 @@
 namespace GameWrapper
 
-type GameConfig<'TState> = {
+type GameConfig<'GameState> = {
         loadAssets: AssetInfo list
-        initialState: 'TState
-        updateState: KeyboardInfo -> 'TState -> 'TState
-        getView: 'TState -> TextInfo list
+        initialState: 'GameState
+        updateState: RunState -> 'GameState -> 'GameState
+        getView: 'GameState -> TextInfo list
     }

@@ -24,8 +24,8 @@ type CountingGameState = {
 
 let initialState = { guess = 50; upper = 100; lower = 0; guesses = 1; win = false }
 
-let updateState (keyboardInfo: KeyboardInfo) gameState =
-    let isPressed key = List.contains key keyboardInfo.keysDown
+let updateState (runState: RunState) gameState =
+    let isPressed key = List.contains key runState.keyboard.keysDown
 
     if isPressed Keys.Y && gameState.win then
         initialState
