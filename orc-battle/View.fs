@@ -3,5 +3,5 @@ open GameCore
 
 let getView _ = 
     [
-        { textureKey = "player"; position = 100.0,100.0; size = 20.0,60.0 }
+        { textureKey = "player"; destRect = 100,100,60,60; sourceRect = Some (0,0,32,32) }
     ], []

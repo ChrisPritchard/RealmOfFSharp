@@ -102,7 +102,8 @@ let updateState (runState: RunState) gameState =
 
 let getView gameState =
     let calculatePos (x,y) = 
-        10 + (tileSize.x * x) |> float, 10 + (tileSize.y * y) |> float
+        10 + (tileSize.x * x), 10 + (tileSize.y * y), 
+        tileSize.x, tileSize.y
     let images = 
         [0..world.x - 1] |> List.collect (fun x -> 
         [0..world.y - 1] |> List.map (fun y -> 
@@ -112,7 +113,7 @@ let getView gameState =
                 elif List.head gameState.snake = point then "head"
                 elif List.contains point gameState.snake then "snake"
                 else "empty"
-            { textureKey = key; position = calculatePos point; size = float tileSize.x, float tileSize.y }))
+            { textureKey = key; destRect = calculatePos point; sourceRect = None }))
     
     if gameState.loss then
         images, 

@@ -2,6 +2,6 @@ namespace GameCore
 
 type DrawableImage = {
     textureKey: string
-    position: float * float
-    size: float * float
+    destRect: int * int * int * int
+    sourceRect: (int * int * int * int) option
 }

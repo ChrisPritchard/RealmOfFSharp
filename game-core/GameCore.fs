@@ -3,6 +3,7 @@
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics;
 open Microsoft.Xna.Framework.Input;
+open System
 
 type GameCore<'TState> (config: GameConfig<'TState>) as this = 
     inherit Game()
@@ -27,8 +28,8 @@ type GameCore<'TState> (config: GameConfig<'TState>) as this =
         }
 
     let asVector2 (x:float,y:float) = new Vector2(float32 x, float32 y)
-    let asRectangle (x:float,y:float) (width:float,height:float) = 
-        new Rectangle (int x, int y, int width, int height)
+    let asRectangle (x,y,width,height) = 
+        new Rectangle (x,y,width,height)
 
     override __.LoadContent() = 
         spriteBatch <- new SpriteBatch(this.GraphicsDevice)
@@ -55,10 +56,14 @@ type GameCore<'TState> (config: GameConfig<'TState>) as this =
             |> fst
             |> List.map (fun d -> d,textureAssets.[d.textureKey])
             |> List.iter (fun (d,texture) ->
+                let sourceRect = 
+                    match d.sourceRect with 
+                    | None -> Unchecked.defaultof<Nullable<Rectangle>> 
+                    | Some r -> asRectangle r |> Nullable
                 spriteBatch.Draw(
-                    texture, asRectangle d.position d.size, 
-                    Unchecked.defaultof<System.Nullable<Rectangle>>, 
-                    Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 0.5f))
+                    texture, asRectangle d.destRect, 
+                    sourceRect, Color.White, 0.0f, Vector2.Zero, 
+                    SpriteEffects.None, 0.5f))
 
         currentView 
             |> snd
