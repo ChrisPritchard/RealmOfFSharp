@@ -14,7 +14,7 @@ type GameCore<'TState> (config: GameConfig<'TState>) as this =
 
     let mutable keyboardInfo = { pressed = []; keysDown = []; keysUp = [] }
     let mutable gameState = config.initialState
-    let mutable currentView: DrawableText list * DrawableImage list = [],[]
+    let mutable currentView: DrawableImage list * DrawableText list = [],[]
 
     let mutable spriteBatch = Unchecked.defaultof<SpriteBatch>
 
@@ -52,7 +52,7 @@ type GameCore<'TState> (config: GameConfig<'TState>) as this =
         spriteBatch.Begin()
 
         currentView
-            |> snd
+            |> fst
             |> List.map (fun d -> d,textureAssets.[d.textureKey])
             |> List.iter (fun (d,texture) ->
                 spriteBatch.Draw(
@@ -61,7 +61,7 @@ type GameCore<'TState> (config: GameConfig<'TState>) as this =
                     Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 0.5f))
 
         currentView 
-            |> fst
+            |> snd
             |> List.map (fun d -> d,fontAssets.[d.fontKey])
             |> List.iter (fun (d,font) ->
                 spriteBatch.DrawString(

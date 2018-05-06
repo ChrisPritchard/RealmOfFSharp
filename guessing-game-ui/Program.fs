@@ -54,7 +54,7 @@ let getView gameState =
                 { baseText with text = sprintf "My guess is %i" gameState.guess; position = (50.0,50.0) };
                 { baseText with text = "Press Up if too low, Down if too high, or 'C' if correct"; position = (50.0,80.0); scale = 0.3 };
             ]
-    text, []
+    [], text
 
 [<EntryPoint>]
 let main _ =

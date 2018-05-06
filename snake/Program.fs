@@ -115,6 +115,7 @@ let getView gameState =
             { textureKey = key; position = calculatePos point; size = float tileSize.x, float tileSize.y }))
     
     if gameState.loss then
+        images, 
         [ { 
             fontKey = "default";
             text = "You Lose!";
@@ -126,9 +127,9 @@ let getView gameState =
               text = "Press 'R' to Restart";
               position = 20.0, (world.y / 2) * tileSize.y + 40 |> float;
               scale = 0.5
-          } ],images
+          } ]
     else 
-        [],images
+        images, []
 
 [<EntryPoint>]
 let main _ =

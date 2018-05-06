@@ -1,5 +1,7 @@
 module Model
 open System
+open Aether
+open Aether.Operators
 
 let rnd = new Random ()
 let random n = rnd.Next (0, n)
@@ -10,7 +12,8 @@ type Player = {
     health: int
     agility: int
     strength: int
-}
+} with
+    static member health_ = (fun o -> o.health), (fun h o -> { o with health = h })
 
 let initialPlayer = { health = 35; agility = 35; strength = 35; }
 
@@ -27,7 +30,10 @@ type Battle = {
     actionsRemaining: int
     targetIndex: int
     gameOver: bool
-}
+} with
+    static member player_ = (fun o -> o.player), (fun p o -> { o with player = p })
+
+let playerHealth = Battle.player_ >-> Player.health_
 
 let orcAttack orc (player: Player) = 
     if player.health = 0 then player
@@ -44,7 +50,8 @@ let playerAttack attackType battle =
     let btl = { battle with actionsRemaining = battle.actionsRemaining - 1 }
     match attackType with
     | Recover -> 
-        { btl with player = { battle.player with health = min (battle.player.health + random 8) initialPlayer.health } }
+        let newHealth = Optic.get playerHealth btl |> (+) (random 8) |> max initialPlayer.health
+        Optic.set playerHealth newHealth btl
     | Stab ->
         match List.tryItem battle.targetIndex battle.orcs with
         | None -> battle
@@ -54,12 +61,11 @@ let playerAttack attackType battle =
     | Flail ->
         let newOrcs =
             [-1;0;1] |> List.map (fun n -> 
-            let index = battle.targetIndex + n
-            match List.tryItem index battle.orcs with
-            | None -> None
-            | Some o -> 
-                Some (n,{ o with health = o.health - random 3 })
-            )
+                let index = battle.targetIndex + n
+                match List.tryItem index battle.orcs with
+                | None -> None
+                | Some o -> 
+                    Some (n,{ o with health = o.health - random 3 }))
         List.fold (fun b op -> 
             match op with
             | None -> b
