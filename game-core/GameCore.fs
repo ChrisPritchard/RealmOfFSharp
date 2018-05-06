@@ -50,7 +50,8 @@ type GameCore<'TState> (config: GameConfig<'TState>) as this =
 
     override __.Draw(_) =
         this.GraphicsDevice.Clear Color.White
-        spriteBatch.Begin()
+        
+        spriteBatch.Begin(SpriteSortMode.Texture, BlendState.AlphaBlend, SamplerState.PointClamp)
 
         currentView
             |> fst
@@ -64,6 +65,9 @@ type GameCore<'TState> (config: GameConfig<'TState>) as this =
                     texture, asRectangle d.destRect, 
                     sourceRect, Color.White, 0.0f, Vector2.Zero, 
                     SpriteEffects.None, 0.5f))
+
+        spriteBatch.End()
+        spriteBatch.Begin()
 
         currentView 
             |> snd
