@@ -40,7 +40,7 @@ let updateState (runState: RunState) gameState =
     else
         gameState
 
-let getView gameState = 
+let getView _ gameState = 
     let baseText = { fontKey = "default"; text = ""; position = (0.0,0.0); scale = 0.4 }
     let text = 
         if gameState.win then

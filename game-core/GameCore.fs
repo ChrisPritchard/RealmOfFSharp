@@ -46,7 +46,7 @@ type GameCore<'TState> (config: GameConfig<'TState>) as this =
         keyboardInfo <- updateKeyboardInfo (Keyboard.GetState()) keyboardInfo
         let runState = { keyboard = keyboardInfo; elapsed = gameTime.TotalGameTime.TotalMilliseconds }
         gameState <- config.updateState runState gameState
-        currentView <- config.getView gameState
+        currentView <- config.getView runState gameState
 
     override __.Draw(_) =
         this.GraphicsDevice.Clear Color.White

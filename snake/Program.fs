@@ -100,7 +100,7 @@ let updateState (runState: RunState) gameState =
             let newState = { newState with lastTick = runState.elapsed }
             advanceSnake newState
 
-let getView gameState =
+let getView _ gameState =
     let calculatePos (x,y) = 
         10 + (tileSize.x * x), 10 + (tileSize.y * y), 
         tileSize.x, tileSize.y
