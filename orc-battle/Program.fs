@@ -17,6 +17,6 @@ let main _ =
         updateState = fun _ btl -> btl; 
         getView = getView }
 
-    let game = new GameCore<Battle>(config)
+    use game = new GameCore<Battle>(config)
     game.Run()
     0
