@@ -54,10 +54,9 @@ type GameCore<'TState> (config: GameConfig<'TState>) as this =
     override __.Draw(_) =
         this.GraphicsDevice.Clear Color.White
         
-        spriteBatch.Begin(SpriteSortMode.Texture, BlendState.AlphaBlend, SamplerState.PointClamp)
+        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp)
 
-        currentView
-            |> fst
+        fst currentView
             |> List.map (fun d -> d,textureAssets.[d.textureKey])
             |> List.iter (fun (d,texture) ->
                 let sourceRect = 
@@ -67,13 +66,12 @@ type GameCore<'TState> (config: GameConfig<'TState>) as this =
                 spriteBatch.Draw(
                     texture, asRectangle d.destRect, 
                     sourceRect, Color.White, 0.0f, Vector2.Zero, 
-                    SpriteEffects.None, 0.5f))
+                    SpriteEffects.None, 0.0f))
 
         spriteBatch.End()
         spriteBatch.Begin()
 
-        currentView 
-            |> snd
+        snd currentView 
             |> List.map (fun d -> d,fontAssets.[d.fontKey])
             |> List.iter (fun (d,font) ->
                 spriteBatch.DrawString(
