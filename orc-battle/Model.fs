@@ -1,7 +1,5 @@
 module Model
 open System
-open Aether
-open Aether.Operators
 
 let rnd = new Random ()
 let random n = rnd.Next (0, n)
@@ -10,8 +8,7 @@ let attacksPerTurn = 3
 
 type Player = {
     health: int
-} with
-    static member health_ = (fun o -> o.health), (fun h o -> { o with health = h })
+}
 
 let initialPlayer = { health = 35; }
 
@@ -27,42 +24,41 @@ let getOrc = { health = 8; weapon = enum<Weapon>(random 2) }
 type Battle = {
     player: Player
     orcs: Orc list
-    actionsRemaining: int
-    targetIndex: int
-    gameOver: bool
-} with
-    static member player_ = (fun o -> o.player), (fun p o -> { o with player = p })
-
-let playerHealth = Battle.player_ >-> Player.health_
+    state: State
+}
+  and State = | PlayerTurn of PlayerState | OrcTurn of int | GameOver
+  and PlayerState = { actionsRemaining: int; target: int }
 
 let orcAttack orc battle = 
-    let health = Optic.get playerHealth battle
+    let health = battle.player.health
     if health <= 0 then battle
     else
+        let setHealth newHealth = 
+            { battle with player = { battle.player with health = newHealth } }
         match orc.weapon with
-        | Weapon.Club -> Optic.set playerHealth (health - random 6) battle
-        | Weapon.Spear -> Optic.set playerHealth (health - (2 + random 3)) battle
-        | _ -> Optic.set playerHealth (health - 3) battle // Whip
+        | Weapon.Club -> setHealth (health - random 6)
+        | Weapon.Spear -> setHealth (health - (2 + random 3))
+        | _ -> setHealth (health - 3) // Whip
 
 let replace index newItem lst = 
     List.take index lst @ [newItem] @ List.skip (index + 1) lst
 
-let playerAttack attackType battle =
-    let btl = { battle with actionsRemaining = battle.actionsRemaining - 1 }
+let playerAttack attackType playerState battle =
+    let btl = { battle with state = PlayerTurn { playerState with actionsRemaining = playerState.actionsRemaining - 1 } }
     match attackType with
     | Recover -> 
-        let newHealth = Optic.get playerHealth btl |> (+) (random 8) |> max initialPlayer.health
-        Optic.set playerHealth newHealth btl
+        let newHealth = btl.player.health |> (+) (random 8) |> max initialPlayer.health
+        { btl with player = { btl.player with health = newHealth } }
     | Stab ->
-        match List.tryItem battle.targetIndex battle.orcs with
+        match List.tryItem playerState.target battle.orcs with
         | None -> battle
         | Some o -> 
             let newOrc = { o with health = o.health - random 6 }
-            { btl with orcs = replace battle.targetIndex newOrc battle.orcs }
+            { btl with orcs = replace playerState.target newOrc battle.orcs }
     | Flail ->
         let newOrcs =
             [-1;0;1] |> List.map (fun n -> 
-                let index = battle.targetIndex + n
+                let index = playerState.target + n
                 match List.tryItem index battle.orcs with
                 | None -> None
                 | Some o -> 
