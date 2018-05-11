@@ -10,12 +10,10 @@ let attacksPerTurn = 3
 
 type Player = {
     health: int
-    agility: int
-    strength: int
 } with
     static member health_ = (fun o -> o.health), (fun h o -> { o with health = h })
 
-let initialPlayer = { health = 35; agility = 35; strength = 35; }
+let initialPlayer = { health = 35; }
 
 type PlayerAttack = | Stab | Flail | Recover
 
@@ -39,9 +37,9 @@ let orcAttack orc (player: Player) =
     if player.health = 0 then player
     else
         match orc.weapon with
-        | Club -> { player with health = player.health - random 6 } 
-        | Spear -> { player with health = player.health - random 3; strength = player.agility - random 3 }
-        | Whip -> { player with health = player.health - random 3; agility = player.agility - random 3 }
+        | Club -> { player with health = player.health - random 3 } 
+        | Spear -> { player with health = player.health - (2 + random 3) }
+        | Whip -> { player with health = player.health - 3 }
 
 let replace index newItem lst = 
     List.take index lst @ [newItem] @ List.skip (index + 1) lst
