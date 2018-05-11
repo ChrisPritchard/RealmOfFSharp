@@ -24,10 +24,12 @@ type Battle = {
     orcs: Orc list
     state: State
 }
-  and State = | PlayerTurn of PlayerState | OrcTurn of int | GameOver
+  and State = | PlayerTurn of PlayerState | OrcTurn of OrcState | GameOver
   and PlayerState = { actionsRemaining: int; target: int }
+  and OrcState = { index: int; lastTick: float }
 
 let turnStart = PlayerTurn { actionsRemaining = 3; target = 0 }
+let timeBetweenOrcs = 1000.0
 
 let orcAttack orc battle = 
     let health = battle.player.health
