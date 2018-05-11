@@ -1,5 +1,7 @@
 module Model
 open System
+open GameCore
+open Microsoft.Xna.Framework.Input
 
 let rnd = new Random ()
 let random n = rnd.Next (0, n)
@@ -67,3 +69,13 @@ let playerAttack attackType playerState battle =
             match op with
             | None -> b
             | Some (i, o) -> { b with orcs = replace i o b.orcs }) btl newOrcs
+
+let updateModel (runState: RunState) battle = 
+    match battle.state with
+    | GameOver -> battle
+    | PlayerTurn playerState ->
+        if runState.WasJustPressed Keys.Left then
+            battle
+        else battle
+    | OrcTurn orcIndex -> 
+        battle
