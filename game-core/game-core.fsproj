@@ -10,7 +10,6 @@
     <Compile Include="DrawableImage.fs" />
     <Compile Include="KeyboardInfo.fs" />
     <Compile Include="RunState.fs" />
-    <Compile Include="GameConfig.fs" />
     <Compile Include="GameCore.fs" />
   </ItemGroup>
 

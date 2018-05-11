@@ -19,7 +19,7 @@ type Orc = {
 
 let getOrc = { health = 8; weapon = enum<Weapon>(random 2) }
 
-type Battle = {
+type BattleModel = {
     player: Player
     orcs: Orc list
     state: State

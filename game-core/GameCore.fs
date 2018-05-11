@@ -5,7 +5,8 @@ open Microsoft.Xna.Framework.Graphics;
 open Microsoft.Xna.Framework.Input;
 open System
 
-type GameCore<'TState> (config: GameConfig<'TState>) as this = 
+type GameCore<'TModel> (assetsToLoad, updateModel, getView)
+    as this = 
     inherit Game()
 
     do new GraphicsDeviceManager(this) |> ignore
@@ -14,7 +15,7 @@ type GameCore<'TState> (config: GameConfig<'TState>) as this =
     let mutable fontAssets = Map.empty<string, SpriteFont>
 
     let mutable keyboardInfo = { pressed = []; keysDown = []; keysUp = [] }
-    let mutable gameState = config.initialState
+    let mutable currentModel: 'TModel option = None
     let mutable currentView: DrawableImage list * DrawableText list = [],[]
 
     let mutable spriteBatch = Unchecked.defaultof<SpriteBatch>
@@ -33,23 +34,24 @@ type GameCore<'TState> (config: GameConfig<'TState>) as this =
 
     override __.LoadContent() = 
         spriteBatch <- new SpriteBatch(this.GraphicsDevice)
-        textureAssets <- config.loadAssets
+        textureAssets <- assetsToLoad
             |> List.filter (fun a -> a.assetType = AssetType.Texture) 
             |> List.map (fun t -> t.key, this.Content.Load<Texture2D>(t.path))
             |> Map.ofList
-        fontAssets <- config.loadAssets 
+        fontAssets <- assetsToLoad
             |> List.filter (fun a -> a.assetType = AssetType.Font) 
             |> List.map (fun f -> f.key, this.Content.Load<SpriteFont>(f.path))
             |> Map.ofList
 
     override __.Update(gameTime) =
         keyboardInfo <- updateKeyboardInfo (Keyboard.GetState()) keyboardInfo
-        if List.contains Keys.Escape keyboardInfo.keysDown 
-        then this.Exit()
-        else
-            let runState = { keyboard = keyboardInfo; elapsed = gameTime.TotalGameTime.TotalMilliseconds }
-            gameState <- config.updateState runState gameState
-            currentView <- config.getView runState gameState
+        let runState = { keyboard = keyboardInfo; elapsed = gameTime.TotalGameTime.TotalMilliseconds }
+        
+        currentModel <- updateModel runState currentModel
+        match currentModel with
+        | None -> __.Exit()
+        | Some model ->
+            currentView <- getView runState model
 
     override __.Draw(_) =
         this.GraphicsDevice.Clear Color.White

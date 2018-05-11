@@ -21,7 +21,7 @@ type Dim = { x: int; y: int }
 let world = { x = 15; y = 15 }
 let tileSize = { x = 30; y = 30 }
 
-type GameState = {
+type GameModel = {
     snake: (int * int) list
     dir: Dir
     goo: int * int
@@ -37,7 +37,7 @@ let rec randomGoo snake =
     then randomGoo snake else newGoo
 
 let snakeStart = [ world.x / 2, world.y / 2 ]
-let initialState = { 
+let gameStart = { 
     snake = snakeStart
     dir = Dir.South
     goo = randomGoo snakeStart
@@ -46,10 +46,10 @@ let initialState = {
     loss = false
 }
 
-let nextHead state =
-    let (cx,cy) = List.head state.snake
+let nextHead model =
+    let (cx,cy) = List.head model.snake
     let (nx, ny) = 
-        match state.dir with
+        match model.dir with
         | North -> cx, cy - 1
         | East -> cx + 1, cy
         | South -> cx, cy + 1
@@ -57,50 +57,55 @@ let nextHead state =
     if nx < 0 || ny < 0 || nx = world.x || ny = world.y
     then None else Some (nx, ny)
 
-let checkForDirChange isPressed gameState =
-    if List.contains gameState.dir [ Dir.North; Dir.South ] then
+let checkForDirChange isPressed model =
+    if List.contains model.dir [ Dir.North; Dir.South ] then
         if isPressed Keys.Right then Dir.East
         elif isPressed Keys.Left then Dir.West
-        else gameState.dir
+        else model.dir
     else
         if isPressed Keys.Up then Dir.North
         elif isPressed Keys.Down then Dir.South
-        else gameState.dir
+        else model.dir
 
-let advanceSnake gameState = 
-    let next = nextHead gameState
+let advanceSnake model = 
+    let next = nextHead model
     match next with
     | None -> 
-            { gameState with loss = true }
-    | Some n when List.contains n gameState.snake -> 
-            { gameState with loss = true }
+            { model with loss = true }
+    | Some n when List.contains n model.snake -> 
+            { model with loss = true }
     | Some n -> 
-        if n = gameState.goo
+        if n = model.goo
         then 
-            let newSnake = n::gameState.snake
-            let newSpeed = max (gameState.timeBetweenTicks * 0.9) 100.0
-            { gameState with snake = newSnake; goo = randomGoo newSnake; timeBetweenTicks = newSpeed }
+            let newSnake = n::model.snake
+            let newSpeed = max (model.timeBetweenTicks * 0.9) 100.0
+            { model with snake = newSnake; goo = randomGoo newSnake; timeBetweenTicks = newSpeed }
         else
-            let truncated = List.take (List.length gameState.snake - 1) gameState.snake
-            { gameState with snake = n::truncated }
+            let truncated = List.take (List.length model.snake - 1) model.snake
+            { model with snake = n::truncated }
 
-let updateState (runState: RunState) gameState = 
-    let isPressed key = List.contains key runState.keyboard.keysDown
-    if gameState.loss then 
-        if isPressed Keys.R 
-        then { initialState with goo = randomGoo snakeStart } 
-        else gameState
-    else
-        let dir = checkForDirChange isPressed gameState
-        let newState = { gameState with dir = dir }
+let updateModel (runState: RunState) currentModel = 
+    match currentModel with
+    | None -> Some gameStart
+    | Some model ->
+        let isPressed key = List.contains key runState.keyboard.keysDown
+        if model.loss then 
+            if isPressed Keys.R 
+            then Some { gameStart with goo = randomGoo snakeStart } 
+            elif isPressed Keys.Escape
+            then None
+            else currentModel
+        else
+            let dir = checkForDirChange isPressed model
+            let newState = { model with dir = dir }
 
-        if runState.elapsed - gameState.lastTick < gameState.timeBetweenTicks 
-        then newState
-        else 
-            let newState = { newState with lastTick = runState.elapsed }
-            advanceSnake newState
+            if runState.elapsed - model.lastTick < model.timeBetweenTicks 
+            then Some newState
+            else 
+                let newState = { newState with lastTick = runState.elapsed }
+                advanceSnake newState |> Some
 
-let getView _ gameState =
+let getView _ model =
     let calculatePos (x,y) = 
         10 + (tileSize.x * x), 10 + (tileSize.y * y), 
         tileSize.x, tileSize.y
@@ -109,13 +114,13 @@ let getView _ gameState =
         [0..world.y - 1] |> List.map (fun y -> 
             let point = (x,y)
             let key = 
-                if gameState.goo = point then "goo"
-                elif List.head gameState.snake = point then "head"
-                elif List.contains point gameState.snake then "snake"
+                if model.goo = point then "goo"
+                elif List.head model.snake = point then "head"
+                elif List.contains point model.snake then "snake"
                 else "empty"
             { textureKey = key; destRect = calculatePos point; sourceRect = None }))
     
-    if gameState.loss then
+    if model.loss then
         images, 
         [ { 
             fontKey = "default";
@@ -125,16 +130,15 @@ let getView _ gameState =
           };
           {
               fontKey = "default";
-              text = "Press 'R' to Restart";
+              text = "Press 'R' to Restart or Escape to exit";
               position = 20.0, (world.y / 2) * tileSize.y + 40 |> float;
-              scale = 0.5
+              scale = 0.4
           } ]
     else 
         images, []
 
 [<EntryPoint>]
 let main _ =
-    let config = { loadAssets = assets; initialState = initialState; updateState = updateState; getView = getView }
-    use game = new GameCore<GameState> (config)
+    use game = new GameCore<GameModel> (assets, updateModel, getView)
     game.Run()
     0

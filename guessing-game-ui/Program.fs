@@ -1,4 +1,5 @@
-﻿module MyGameEntry
+﻿open GameCore
+open Microsoft.Xna.Framework.Input
 
 (*
     Implementation of 5.4 Guessing Game with a GUI. 
@@ -7,14 +8,11 @@
     (except for the Keys enum and a reference to the font asset) MonoGame agnostic
 *)
 
-open GameCore
-open Microsoft.Xna.Framework.Input
-
 let assets = [
     { key = "default"; assetType = AssetType.Font; path = "Content/JuraMedium" }
 ]
 
-type CountingGameState = {
+type CountingGameModel = {
     guess: int
     upper: int;
     lower: int;
@@ -22,43 +20,47 @@ type CountingGameState = {
     win: bool;
 }
 
-let initialState = { guess = 50; upper = 100; lower = 0; guesses = 1; win = false }
+let gameStartModel = { guess = 50; upper = 100; lower = 0; guesses = 1; win = false }
 
-let updateState (runState: RunState) gameState =
-    let isPressed = runState.WasJustPressed
+let updateModel (runState: RunState) currentModel =
+    match currentModel with
+    | None -> Some gameStartModel
+    | Some gameState ->
+        let isPressed = runState.WasJustPressed
 
-    if isPressed Keys.Y && gameState.win then
-        initialState
-    elif isPressed Keys.C then
-        { gameState with win = true }
-    elif isPressed Keys.Down then
-        let newGuess = (gameState.guess - gameState.lower) / 2 + gameState.lower
-        { gameState with guesses = gameState.guesses + 1; upper = gameState.guess; guess = newGuess }
-    elif isPressed Keys.Up then
-        let newGuess = (gameState.upper - gameState.guess) / 2 + gameState.guess
-        { gameState with guesses = gameState.guesses + 1; lower = gameState.guess; guess = newGuess }
-    else
-        gameState
+        if isPressed Keys.Y && gameState.win then
+            Some gameStartModel
+        elif isPressed Keys.Escape then
+            None
+        elif isPressed Keys.C then
+            Some { gameState with win = true }
+        elif isPressed Keys.Down then
+            let newGuess = (gameState.guess - gameState.lower) / 2 + gameState.lower
+            Some { gameState with guesses = gameState.guesses + 1; upper = gameState.guess; guess = newGuess }
+        elif isPressed Keys.Up then
+            let newGuess = (gameState.upper - gameState.guess) / 2 + gameState.guess
+            Some { gameState with guesses = gameState.guesses + 1; lower = gameState.guess; guess = newGuess }
+        else
+            Some gameState
 
-let getView _ gameState = 
+let getView _ model = 
     let baseText = { fontKey = "default"; text = ""; position = (0.0,0.0); scale = 0.4 }
     let text = 
-        if gameState.win then
+        if model.win then
             [
                 { baseText with text = "Excellent!"; position = (50.0,50.0); scale = 0.8 };
-                { baseText with text = sprintf "I took %i guesses" gameState.guesses; position = (50.0,100.0) };
+                { baseText with text = sprintf "I took %i guesses" model.guesses; position = (50.0,100.0) };
                 { baseText with text = "Press 'Y' to play again"; position = (50.0,130.0) }
             ]
         else
             [
-                { baseText with text = sprintf "My guess is %i" gameState.guess; position = (50.0,50.0) };
+                { baseText with text = sprintf "My guess is %i" model.guess; position = (50.0,50.0) };
                 { baseText with text = "Press Up if too low, Down if too high, or 'C' if correct"; position = (50.0,80.0); scale = 0.3 };
             ]
     [], text
 
 [<EntryPoint>]
 let main _ =
-    let config = { loadAssets = assets; initialState = initialState; updateState = updateState; getView = getView }
-    use game = new GameCore<CountingGameState> (config)
+    use game = new GameCore<CountingGameModel>(assets, updateModel, getView)
     game.Run()
     0
