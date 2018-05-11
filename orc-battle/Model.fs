@@ -35,13 +35,14 @@ type Battle = {
 
 let playerHealth = Battle.player_ >-> Player.health_
 
-let orcAttack orc (player: Player) = 
-    if player.health = 0 then player
+let orcAttack orc battle = 
+    let health = Optic.get playerHealth battle
+    if health <= 0 then battle
     else
         match orc.weapon with
-        | Weapon.Club -> { player with health = player.health - random 6 } 
-        | Weapon.Spear -> { player with health = player.health - (2 + random 3) }
-        | _ -> { player with health = player.health - 3 } // Whip
+        | Weapon.Club -> Optic.set playerHealth (health - random 6) battle
+        | Weapon.Spear -> Optic.set playerHealth (health - (2 + random 3)) battle
+        | _ -> Optic.set playerHealth (health - 3) battle // Whip
 
 let replace index newItem lst = 
     List.take index lst @ [newItem] @ List.skip (index + 1) lst
