@@ -20,7 +20,9 @@ type PlayerAttack = | Stab | Flail | Recover
 type Orc = {
     health: int
     weapon: Weapon
-} and Weapon = | Club | Spear | Whip
+} and Weapon = | Club = 0 | Spear = 1 | Whip = 2
+
+let getOrc = { health = 8; weapon = enum<Weapon>(random 2) }
 
 type Battle = {
     player: Player
@@ -37,9 +39,9 @@ let orcAttack orc (player: Player) =
     if player.health = 0 then player
     else
         match orc.weapon with
-        | Club -> { player with health = player.health - random 3 } 
-        | Spear -> { player with health = player.health - (2 + random 3) }
-        | Whip -> { player with health = player.health - 3 }
+        | Weapon.Club -> { player with health = player.health - random 6 } 
+        | Weapon.Spear -> { player with health = player.health - (2 + random 3) }
+        | _ -> { player with health = player.health - 3 } // Whip
 
 let replace index newItem lst = 
     List.take index lst @ [newItem] @ List.skip (index + 1) lst
