@@ -1,12 +1,8 @@
 module Model
 open System
-open GameCore
-open Microsoft.Xna.Framework.Input
 
 let rnd = new Random ()
 let random n = rnd.Next (0, n)
-
-let attacksPerTurn = 3
 
 type Player = {
     health: int
@@ -30,6 +26,8 @@ type Battle = {
 }
   and State = | PlayerTurn of PlayerState | OrcTurn of int | GameOver
   and PlayerState = { actionsRemaining: int; target: int }
+
+let turnStart = PlayerTurn { actionsRemaining = 3; target = 0 }
 
 let orcAttack orc battle = 
     let health = battle.player.health
@@ -69,13 +67,3 @@ let playerAttack attackType playerState battle =
             match op with
             | None -> b
             | Some (i, o) -> { b with orcs = replace i o b.orcs }) btl newOrcs
-
-let updateModel (runState: RunState) battle = 
-    match battle.state with
-    | GameOver -> battle
-    | PlayerTurn playerState ->
-        if runState.WasJustPressed Keys.Left then
-            battle
-        else battle
-    | OrcTurn orcIndex -> 
-        battle

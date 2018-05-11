@@ -1,5 +1,6 @@
 ﻿open Model
 open View
+open Controller
 open GameCore
 
 [<EntryPoint>]
@@ -16,9 +17,9 @@ let main _ =
     ]
 
     let config = { 
-        loadAssets = assets; 
-        initialState = Unchecked.defaultof<Battle>; 
-        updateState = fun _ btl -> btl; 
+        loadAssets = assets 
+        initialState = { player = initialPlayer; orcs = []; state = turnStart } 
+        updateState = updateModel 
         getView = getView }
 
     use game = new GameCore<Battle>(config)
