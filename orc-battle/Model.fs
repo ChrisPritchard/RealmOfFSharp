@@ -33,7 +33,7 @@ let timeBetweenOrcs = 1000.0
 
 let orcAttack orc battle = 
     let health = battle.player.health
-    if health <= 0 then battle
+    if health <= 0 || orc.health <= 0 then battle
     else
         let setHealth newHealth = 
             { battle with player = { battle.player with health = newHealth } }
