@@ -12,7 +12,7 @@ let assets = [
         { key = "white"; assetType = AssetType.Texture; path = "Content/white" }
     ]
 
-let playerAnims = [0..9] |> List.map (fun i -> (i * 32,0,32,32))
+let anims = [0..9] |> List.map (fun i -> (i * 32,0,32,32))
 
 let barElements colourKey rect percent = 
     seq {
@@ -23,9 +23,26 @@ let barElements colourKey rect percent =
         yield { textureKey = colourKey; destRect = x+2,y+2,valueWidth,height-4; sourceRect = None }
     } |> Seq.toList
 
-let getView runState _ = 
-    let playerFrame = playerAnims.[(runState.elapsed / 100.0) % 10.0 |> int]
+let unitWithHealth position textureKey frame healthPercent = 
+    let (x,y,width,height) = position
     [
-        //{ textureKey = "player"; destRect = 100,100,100,100; sourceRect = Some playerFrame }
-        barElements "green" (100,100,400,30) 0.5
+        [{ textureKey = textureKey; destRect = position; sourceRect = Some frame }]
+        barElements "green" (x,y + height + 10,width,width / 8) healthPercent
+    ] |> List.concat
+
+let selected position textureKey = 
+    let (x,y,width,height) = position
+    [
+        { textureKey = textureKey; destRect = position; sourceRect = None }
+        { textureKey = "white"; destRect = (x + 2, y + 2, width - 4, height - 4); sourceRect = None }
+    ]
+
+let getView runState _ = 
+    let frame = anims.[(runState.elapsed / 100.0) % 10.0 |> int]
+    [
+        unitWithHealth (100,100,100,100) "player" frame 0.2
+        unitWithHealth (300,100,100,100) "orc_club" frame 0.2
+        selected (410,100,100,100) "red"
+        unitWithHealth (410,100,100,100) "orc_spear" frame 0.2
+        unitWithHealth (520,100,100,100) "orc_whip" frame 0.2
     ] |> List.concat, []
