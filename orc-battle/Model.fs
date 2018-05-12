@@ -25,7 +25,7 @@ type BattleModel = {
     orcs: Orc list
     state: State
 }
-  and State = | PlayerTurn of PlayerState | OrcTurn of OrcState | GameOver
+  and State = | PlayerTurn of PlayerState | OrcTurn of OrcState | GameOver | Victory
   and PlayerState = { actionsRemaining: int; target: int }
   and OrcState = { index: int; lastTick: float }
 

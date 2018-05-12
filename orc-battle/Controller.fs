@@ -55,6 +55,9 @@ let updateModel (runState: RunState) currentBattle =
     | None -> Some initialBattle
     | Some battle ->
         match battle.state with
-        | GameOver -> currentBattle
+        | GameOver | Victory -> 
+            if runState.WasJustPressed Keys.R then Some initialBattle
+            elif runState.WasJustPressed Keys.Escape then None
+            else currentBattle
         | PlayerTurn playerState -> handlePlayerTurn runState playerState battle
         | OrcTurn orcState -> handleOrcTurn runState orcState battle

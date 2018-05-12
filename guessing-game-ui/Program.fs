@@ -44,18 +44,18 @@ let updateModel (runState: RunState) currentModel =
             Some gameState
 
 let getView _ model = 
-    let baseText = { fontKey = "default"; text = ""; position = (0.0,0.0); scale = 0.4 }
+    let baseText = { fontKey = "default"; text = ""; position = (0,0); scale = 0.4 }
     let text = 
         if model.win then
             [
-                { baseText with text = "Excellent!"; position = (50.0,50.0); scale = 0.8 };
-                { baseText with text = sprintf "I took %i guesses" model.guesses; position = (50.0,100.0) };
-                { baseText with text = "Press 'Y' to play again"; position = (50.0,130.0) }
+                { baseText with text = "Excellent!"; position = (50,50); scale = 0.8 };
+                { baseText with text = sprintf "I took %i guesses" model.guesses; position = (50,100) };
+                { baseText with text = "Press 'Y' to play again"; position = (50,130) }
             ]
         else
             [
-                { baseText with text = sprintf "My guess is %i" model.guess; position = (50.0,50.0) };
-                { baseText with text = "Press Up if too low, Down if too high, or 'C' if correct"; position = (50.0,80.0); scale = 0.3 };
+                { baseText with text = sprintf "My guess is %i" model.guess; position = (50,50) };
+                { baseText with text = "Press Up if too low, Down if too high, or 'C' if correct"; position = (50,80); scale = 0.3 };
             ]
     [], text
 

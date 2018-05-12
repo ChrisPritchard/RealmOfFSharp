@@ -3,6 +3,6 @@ namespace GameCore
 type DrawableText = {
     fontKey: string
     text: string
-    position: float * float
+    position: int * int
     scale: float
 }

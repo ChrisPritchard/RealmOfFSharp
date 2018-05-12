@@ -125,13 +125,13 @@ let getView _ model =
         [ { 
             fontKey = "default";
             text = "You Lose!";
-            position = 20.0, (world.y / 2) * tileSize.y |> float;
+            position = 20, (world.y / 2) * tileSize.y;
             scale = 0.5
           };
           {
               fontKey = "default";
               text = "Press 'R' to Restart or Escape to exit";
-              position = 20.0, (world.y / 2) * tileSize.y + 40 |> float;
+              position = 20, (world.y / 2) * tileSize.y + 40;
               scale = 0.4
           } ]
     else 

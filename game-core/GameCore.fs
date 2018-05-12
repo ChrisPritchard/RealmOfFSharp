@@ -28,7 +28,7 @@ type GameCore<'TModel> (assetsToLoad, updateModel, getView)
             keysUp = Set.difference (existing.pressed |> Set.ofList) pressed |> Set.toList
         }
 
-    let asVector2 (x:float,y:float) = new Vector2(float32 x, float32 y)
+    let asVector2 (x,y) = new Vector2(float32 x, float32 y)
     let asRectangle (x,y,width,height) = 
         new Rectangle (x,y,width,height)
 

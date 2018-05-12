@@ -49,6 +49,13 @@
 /processorParam:TextureFormat=Color
 /build:HunterOrc.png
 
+#begin JuraMedium.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:JuraMedium.spritefont
+
 #begin LuckyOrc.png
 /importer:TextureImporter
 /processor:TextureProcessor
