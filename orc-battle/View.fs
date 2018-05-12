@@ -13,7 +13,7 @@ let assets = [
         { key = "white"; assetType = AssetType.Texture; path = "Content/white" }
     ]
 
-let anims = [0..6] |> List.map (fun i -> (i * 32,0,32,32))
+let idleFrames = [0..6] |> List.map (fun i -> (i * 32,0,32,32))
 
 let barElements colourKey rect percent = 
     seq {
@@ -58,7 +58,7 @@ let getOrcUnit rowIndex colIndex isSelected animFrame orc =
     } |> Seq.toList
 
 let getView runState battle = 
-    let idleFrame = anims.[(runState.elapsed / 100.0) % 10.0 |> int]
+    let idleFrame = idleFrames.[(runState.elapsed / 100.0) % 10.0 |> int]
     
     seq {
         let playerHealth = float battle.player.health / float initialPlayer.health
