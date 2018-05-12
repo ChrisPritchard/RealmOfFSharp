@@ -50,7 +50,7 @@ let playerAttack attackType playerState battle =
     let btl = { battle with state = PlayerTurn { playerState with actionsRemaining = playerState.actionsRemaining - 1 } }
     match attackType with
     | Recover -> 
-        let newHealth = btl.player.health |> (+) (random 8) |> max initialPlayer.health
+        let newHealth = btl.player.health |> (+) (random 8) |> min initialPlayer.health
         { btl with player = { btl.player with health = newHealth } }
     | Stab ->
         match List.tryItem playerState.target battle.orcs with
@@ -65,7 +65,7 @@ let playerAttack attackType playerState battle =
                 match List.tryItem index battle.orcs with
                 | None -> None
                 | Some o -> 
-                    Some (n,{ o with health = o.health - random 3 }))
+                    Some (index,{ o with health = o.health - random 3 }))
         List.fold (fun b op -> 
             match op with
             | None -> b
