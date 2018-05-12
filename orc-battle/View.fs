@@ -13,7 +13,7 @@ let assets = [
         { key = "white"; assetType = AssetType.Texture; path = "Content/white" }
     ]
 
-let anims = [0..9] |> List.map (fun i -> (i * 32,0,32,32))
+let anims = [0..6] |> List.map (fun i -> (i * 32,0,32,32))
 
 let barElements colourKey rect percent = 
     seq {
@@ -38,29 +38,32 @@ let selected position textureKey =
         { textureKey = "white"; destRect = (x + 2, y + 2, width - 4, height - 4); sourceRect = None }
     ]
 
-let playerPos = (100,100,100,100)
-let (ox,oy,owidth,oheight) = (300,100,100,100)
-let (ogx,ogy) = 20,20
+let playerPos = (100,50,100,100)
+let (ox,oy,owidth,oheight) = (300,50,100,100)
+let (ogx,ogy) = 20,40
 let orcsPerRow = 3
 
-let getOrcUnit rowIndex colIndex isSelected frame orc =
+let getOrcUnit rowIndex colIndex isSelected animFrame orc =
     let (x, y) = (ox + (colIndex * (100 + ogx)), oy + (rowIndex * (100 + ogy)))
     let orcHealth = float orc.health / float orcStartHealth
     let texture = 
         match orc.weapon with
         | Weapon.Club -> "orc_club"
         | Weapon.Spear -> "orc_spear"
-        | _ -> "orc.whip"
+        | _ -> "orc_whip"
+    let orcFrame = if orc.health > 0 then animFrame else (0,128,32,32)
     seq {
         if isSelected then yield! selected (x,y,100,100) "red"
-        yield! unitWithHealth (x,y,100,100) texture frame orcHealth
+        yield! unitWithHealth (x,y,100,100) texture orcFrame orcHealth
     } |> Seq.toList
 
 let getView runState battle = 
-    let frame = anims.[(runState.elapsed / 100.0) % 10.0 |> int]
+    let idleFrame = anims.[(runState.elapsed / 100.0) % 10.0 |> int]
+    
     seq {
         let playerHealth = float battle.player.health / float initialPlayer.health
-        yield unitWithHealth playerPos "player" frame playerHealth
+        let playerFrame = if battle.player.health > 0 then idleFrame else (32*9,128,32,32)
+        yield unitWithHealth playerPos "player" playerFrame playerHealth
         
         let targetIndex = 
             match battle.state with
@@ -72,5 +75,5 @@ let getView runState battle =
             |> List.indexed |> List.collect (fun (ridx,row) -> 
                 row |> List.indexed |> List.map (fun (oidx, orc) -> 
                     let isSelected = (ridx * orcsPerRow) + oidx = targetIndex
-                    getOrcUnit ridx oidx isSelected frame orc))
+                    getOrcUnit ridx oidx isSelected idleFrame orc))
     } |> Seq.toList |> List.concat, []

@@ -6,7 +6,7 @@ open Microsoft.Xna.Framework.Input
 
 let initialBattle = {
     player = initialPlayer
-    orcs = [1..6] |> List.map (fun _ -> getOrc)
+    orcs = [1..9] |> List.map (fun _ -> getOrc ())
     state = turnStart
 }
 
