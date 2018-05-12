@@ -13,7 +13,7 @@ let assets = [
         { key = "white"; assetType = AssetType.Texture; path = "Content/white" }
     ]
 
-let idleFrames = [0..6] |> List.map (fun i -> (i * 32,0,32,32))
+let idleFrames = [0..9] |> List.map (fun i -> (i * 32,0,32,32))
 
 let barElements colourKey rect percent = 
     seq {

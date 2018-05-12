@@ -6,7 +6,7 @@ open Microsoft.Xna.Framework.Input
 
 let initialBattle = {
     player = initialPlayer
-    orcs = [1..9] |> List.map (fun _ -> getOrc ())
+    orcs = [1..6] |> List.map (fun _ -> getOrc ())
     state = turnStart
 }
 
@@ -14,7 +14,7 @@ let handlePlayerTurn (runState: RunState) playerState battle =
     let pressed = runState.WasJustPressed
     if playerState.actionsRemaining = 0 then
         if pressed Keys.Enter then
-            Some { battle with state = OrcTurn { index = 0; lastTick = 0.0 } }
+            Some { battle with state = OrcTurn { index = -1; lastTick = 0.0 } }
         else
             Some battle
     else
@@ -36,13 +36,19 @@ let handleOrcTurn (runState: RunState) orcState battle =
     if runState.elapsed - orcState.lastTick < timeBetweenOrcs then Some battle
     else
         let orcCount = List.length battle.orcs
-        let postAttack = orcAttack battle.orcs.[orcState.index] battle
+        let postAttack = 
+            if orcState.index >= 0 then orcAttack battle.orcs.[orcState.index] battle
+            else battle
         if postAttack.player.health <= 0 then 
             Some { postAttack with state = GameOver }
         elif orcState.index = orcCount - 1 then 
             Some { postAttack with state = turnStart }
         else
-            Some { postAttack with state = OrcTurn { index = orcState.index + 1; lastTick = runState.elapsed } }
+            let nextIndex = orcState.index + 1
+            if battle.orcs.[nextIndex].health <= 0 then
+                Some { postAttack with state = OrcTurn { index = nextIndex; lastTick = orcState.lastTick } }
+            else
+                Some { postAttack with state = OrcTurn { index = nextIndex; lastTick = runState.elapsed } }
 
 let updateModel (runState: RunState) currentBattle = 
     match currentBattle with
