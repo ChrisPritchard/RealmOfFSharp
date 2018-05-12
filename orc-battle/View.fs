@@ -1,5 +1,6 @@
 module View
 open GameCore
+open Model
 
 let assets = [
         { key = "player"; assetType = AssetType.Texture; path = "Content/MitheralKnight" }
@@ -37,12 +38,39 @@ let selected position textureKey =
         { textureKey = "white"; destRect = (x + 2, y + 2, width - 4, height - 4); sourceRect = None }
     ]
 
-let getView runState _ = 
+let playerPos = (100,100,100,100)
+let (ox,oy,owidth,oheight) = (300,100,100,100)
+let (ogx,ogy) = 20,20
+let orcsPerRow = 3
+
+let getOrcUnit rowIndex colIndex isSelected frame orc =
+    let (x, y) = (ox + (colIndex * (100 + ogx)), oy + (rowIndex * (100 + ogy)))
+    let orcHealth = float orc.health / float orcStartHealth
+    let texture = 
+        match orc.weapon with
+        | Weapon.Club -> "orc_club"
+        | Weapon.Spear -> "orc_spear"
+        | _ -> "orc.whip"
+    seq {
+        if isSelected then yield! selected (x,y,100,100) "red"
+        yield! unitWithHealth (x,y,100,100) texture frame orcHealth
+    } |> Seq.toList
+
+let getView runState battle = 
     let frame = anims.[(runState.elapsed / 100.0) % 10.0 |> int]
-    [
-        unitWithHealth (100,100,100,100) "player" frame 0.2
-        unitWithHealth (300,100,100,100) "orc_club" frame 0.2
-        selected (410,100,100,100) "red"
-        unitWithHealth (410,100,100,100) "orc_spear" frame 0.2
-        unitWithHealth (520,100,100,100) "orc_whip" frame 0.2
-    ] |> List.concat, []
+    seq {
+        let playerHealth = float battle.player.health / float initialPlayer.health
+        yield unitWithHealth playerPos "player" frame playerHealth
+        
+        let targetIndex = 
+            match battle.state with
+            | PlayerTurn t -> t.target
+            | OrcTurn o -> o.index
+            | _ -> 0 
+        yield! 
+            List.chunkBySize orcsPerRow battle.orcs 
+            |> List.indexed |> List.collect (fun (ridx,row) -> 
+                row |> List.indexed |> List.map (fun (oidx, orc) -> 
+                    let isSelected = (ridx * orcsPerRow) + oidx = targetIndex
+                    getOrcUnit ridx oidx isSelected frame orc))
+    } |> Seq.toList |> List.concat, []

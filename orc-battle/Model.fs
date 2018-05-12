@@ -17,7 +17,8 @@ type Orc = {
     weapon: Weapon
 } and Weapon = | Club = 0 | Spear = 1 | Whip = 2
 
-let getOrc = { health = 8; weapon = enum<Weapon>(random 2) }
+let orcStartHealth = 8
+let getOrc = { health = orcStartHealth; weapon = enum<Weapon>(random 2) }
 
 type BattleModel = {
     player: Player
