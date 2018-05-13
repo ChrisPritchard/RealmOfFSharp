@@ -50,7 +50,7 @@ let playerAttack attackType playerState battle =
     let btl = { battle with state = PlayerTurn { playerState with actionsRemaining = playerState.actionsRemaining - 1 } }
     match attackType with
     | Recover -> 
-        let newHealth = btl.player.health |> (+) (random 8) |> min initialPlayer.health
+        let newHealth = btl.player.health |> (+) (4 + random 8) |> min initialPlayer.health
         { btl with player = { btl.player with health = newHealth } }
     | Stab ->
         match List.tryItem playerState.target battle.orcs with

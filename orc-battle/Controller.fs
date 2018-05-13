@@ -18,8 +18,12 @@ let handlePlayerTurn (runState: RunState) playerState battle =
         else
             Some battle
     else
-        if pressed Keys.S then playerAttack Stab playerState battle |> Some
-        elif pressed Keys.F then playerAttack Flail playerState battle |> Some
+        let checkForGameOver postAttack = 
+            if postAttack.orcs |> List.forall (fun o -> o.health <= 0) 
+                then Some { postAttack with state = GameOver }
+                else Some postAttack
+        if pressed Keys.S then playerAttack Stab playerState battle |> checkForGameOver
+        elif pressed Keys.F then playerAttack Flail playerState battle |> checkForGameOver
         elif pressed Keys.R then playerAttack Recover playerState battle |> Some
         else 
             let orcCount = List.length battle.orcs
