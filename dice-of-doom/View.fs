@@ -12,7 +12,7 @@ let getView runState model =
     let hexes = [0.0..5.0] |> List.collect (fun q -> [0.0..5.0] |> List.map (fun r -> { q = q; r = r }))
     
     let cubeTop = Pointy
-    let size = 32.
+    let size = 64.
     let width,height = Cube.width cubeTop size, Cube.height cubeTop size
     
     let points = hexes |> List.map (Hex.toCube >> Cube.toPixel cubeTop size)
