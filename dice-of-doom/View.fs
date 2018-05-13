@@ -16,7 +16,7 @@ let getView runState model =
     let width,height = Cube.width cubeTop size, Cube.height cubeTop size
     
     let points = hexes |> List.map (Hex.toCube >> Cube.toPixel cubeTop size)
-    let rectFrom (x,y) = x - width/2.0 |> int, y - height/2.0 |> int, int width, int height 
+    let rectFrom (x,y) = x - width/2.0 |> int, y - height/2.0 |> int, ceil width |> int, ceil height |> int 
 
     let texture = match cubeTop with | Flat -> "hex_flat" | _ -> "hex_pointy"
     let images = points |> List.map (rectFrom >> fun rect -> { textureKey = texture; destRect = rect; sourceRect = None })
