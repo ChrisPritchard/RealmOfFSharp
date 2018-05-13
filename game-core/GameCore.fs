@@ -23,8 +23,8 @@ type GameCore<'TModel> (assetsToLoad, updateModel, getView)
     let updateKeyboardInfo (keyboard: KeyboardState) existing =
         let pressed = keyboard.GetPressedKeys() |> Set.ofArray
         {
-            pressed = pressed |> Set.toList;
-            keysDown = Set.difference pressed (existing.pressed |> Set.ofList) |> Set.toList;
+            pressed = pressed |> Set.toList
+            keysDown = Set.difference pressed (existing.pressed |> Set.ofList) |> Set.toList
             keysUp = Set.difference (existing.pressed |> Set.ofList) pressed |> Set.toList
         }
 
@@ -34,13 +34,13 @@ type GameCore<'TModel> (assetsToLoad, updateModel, getView)
 
     override __.LoadContent() = 
         spriteBatch <- new SpriteBatch(this.GraphicsDevice)
-        textureAssets <- assetsToLoad
-            |> List.filter (fun a -> a.assetType = AssetType.Texture) 
-            |> List.map (fun t -> t.key, this.Content.Load<Texture2D>(t.path))
+        textureAssets <- 
+            fst assetsToLoad
+            |> List.map (fun (key, path) -> key, this.Content.Load<Texture2D>(path))
             |> Map.ofList
-        fontAssets <- assetsToLoad
-            |> List.filter (fun a -> a.assetType = AssetType.Font) 
-            |> List.map (fun f -> f.key, this.Content.Load<SpriteFont>(f.path))
+        fontAssets <- 
+            snd assetsToLoad
+            |> List.map (fun (key, path) -> key, this.Content.Load<SpriteFont>(path))
             |> Map.ofList
 
     override __.Update(gameTime) =

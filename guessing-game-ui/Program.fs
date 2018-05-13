@@ -8,9 +8,7 @@ open Microsoft.Xna.Framework.Input
     (except for the Keys enum and a reference to the font asset) MonoGame agnostic
 *)
 
-let assets = [
-    { key = "default"; assetType = AssetType.Font; path = "Content/JuraMedium" }
-]
+let assets = [],[ "default", "Content/JuraMedium" ]
 
 type CountingGameModel = {
     guess: int

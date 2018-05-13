@@ -2,16 +2,19 @@ module View
 open GameCore
 open Model
 
-let assets = [
-        { key = "default"; assetType = AssetType.Font; path = "Content/JuraMedium" }
-        { key = "player"; assetType = AssetType.Texture; path = "Content/MitheralKnight" }
-        { key = "orc_club"; assetType = AssetType.Texture; path = "Content/HunterOrc" }
-        { key = "orc_spear"; assetType = AssetType.Texture; path = "Content/LuckyOrc" }
-        { key = "orc_whip"; assetType = AssetType.Texture; path = "Content/RedOrc" }
-        { key = "green"; assetType = AssetType.Texture; path = "Content/green" }
-        { key = "red"; assetType = AssetType.Texture; path = "Content/red" }
-        { key = "black"; assetType = AssetType.Texture; path = "Content/black" }
-        { key = "white"; assetType = AssetType.Texture; path = "Content/white" }
+let assets = 
+    [
+        "player", "Content/MitheralKnight"
+        "orc_club", "Content/HunterOrc"
+        "orc_spear", "Content/LuckyOrc"
+        "orc_whip", "Content/RedOrc"
+        "green", "Content/green"
+        "red", "Content/red"
+        "black", "Content/black"
+        "white", "Content/white"
+    ],
+    [
+        "default", "Content/JuraMedium"
     ]
 
 let idleFrames = [0..9] |> List.map (fun i -> (i * 32,0,32,32))

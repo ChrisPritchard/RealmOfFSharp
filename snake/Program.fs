@@ -9,13 +9,16 @@ open Microsoft.Xna.Framework.Input
     the source problem which had aging goos
 *)
 
-let assets = [
-    { key = "default"; assetType = AssetType.Font; path = "Content/JuraMedium" }
-    { key = "empty"; assetType = AssetType.Texture; path = "Content/empty" }
-    { key = "head"; assetType = AssetType.Texture; path = "Content/head" }
-    { key = "snake"; assetType = AssetType.Texture; path = "Content/snake" }
-    { key = "goo"; assetType = AssetType.Texture; path = "Content/goo" }
-]
+let assets = 
+    [
+        "empty", "Content/empty"
+        "head", "Content/head"
+        "snake", "Content/snake"
+        "goo", "Content/goo"
+    ], 
+    [
+        "default", "Content/JuraMedium"
+    ]
 
 type Dim = { x: int; y: int }
 let world = { x = 15; y = 15 }

@@ -2,11 +2,14 @@ module View
 open GameCore
 open Hex
 
-let assets = [
-    { key = "font"; assetType = AssetType.Font; path = "Content/JuraMedium" }
-    { key = "hex_flat"; assetType = AssetType.Texture; path = "Content/hexFlat" }
-    { key = "hex_pointy"; assetType = AssetType.Texture; path = "Content/hexPointy" }
-]
+let assets = 
+    [
+        "hex_flat", "Content/hexFlat"
+        "hex_pointy", "Content/hexPointy"
+    ],
+    [
+        "font", "Content/JuraMedium"
+    ]
 
 let getView runState model =
     let hexes = [0.0..5.0] |> List.collect (fun q -> [0.0..5.0] |> List.map (fun r -> { q = q; r = r }))

@@ -5,10 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="LoadableAsset.fs" />
-    <Compile Include="DrawableText.fs" />
-    <Compile Include="DrawableImage.fs" />
-    <Compile Include="KeyboardInfo.fs" />
+    <Compile Include="Drawable.fs" />
     <Compile Include="RunState.fs" />
     <Compile Include="GameCore.fs" />
   </ItemGroup>
