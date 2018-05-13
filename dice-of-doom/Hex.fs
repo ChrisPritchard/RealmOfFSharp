@@ -26,6 +26,16 @@ let private sqrt3 = sqrt 3.0
 type Cube with
     static member toAxial cube = { q = cube.x; r = cube.z }
 
+    static member width cubeTop size = 
+        match cubeTop with
+        | Flat -> 2. * size
+        | Pointy -> sqrt3 * size
+
+    static member height cubeTop size = 
+        match cubeTop with
+        | Flat -> sqrt3 * size
+        | Pointy -> 2. * size
+
     static member add target cube = { x = cube.x + target.x; y = cube.y + target.y; z = cube.z + target.z }
 
     static member neighbour dir cube = 
