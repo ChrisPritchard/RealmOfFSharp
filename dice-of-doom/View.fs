@@ -4,11 +4,9 @@ open Hex
 
 let assets = 
     [
-        "hex_flat", "Content/hexFlat"
-        "hex_pointy", "Content/hexPointy"
-    ],
-    [
-        "font", "Content/JuraMedium"
+        Texture { key = "hex_flat"; path = "Content/hexFlat" }
+        Texture { key = "hex_pointy"; path = "Content/hexPointy" }
+        Font { key = "font"; path = "Content/JuraMedium" }
     ]
 
 let getView runState model =
@@ -22,6 +20,6 @@ let getView runState model =
     let rectFrom (x,y) = x - width/2.0 |> int, y - height/2.0 |> int, ceil width |> int, ceil height |> int 
 
     let texture = match cubeTop with | Flat -> "hex_flat" | _ -> "hex_pointy"
-    let images = points |> List.map (rectFrom >> fun rect -> { textureKey = texture; destRect = rect; sourceRect = None })
+    let images = points |> List.map (rectFrom >> fun rect -> Image { assetKey = texture; destRect = rect; sourceRect = None })
          
-    images,[]
+    images
