@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Loadable.fs" />
     <Compile Include="Drawable.fs" />
     <Compile Include="RunState.fs" />
     <Compile Include="GameCore.fs" />

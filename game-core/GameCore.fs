@@ -5,22 +5,25 @@ open Microsoft.Xna.Framework.Graphics;
 open Microsoft.Xna.Framework.Input;
 open System
 
+type private Content =
+| TextureAsset of Texture2D
+| FontAsset of SpriteFont
+
 type GameCore<'TModel> (assetsToLoad, updateModel, getView)
     as this = 
     inherit Game()
 
     do new GraphicsDeviceManager(this) |> ignore
 
-    let mutable textureAssets = Map.empty<string, Texture2D>
-    let mutable fontAssets = Map.empty<string, SpriteFont>
+    let mutable assets = Map.empty<string, Content>
 
     let mutable keyboardInfo = { pressed = []; keysDown = []; keysUp = [] }
     let mutable currentModel: 'TModel option = None
-    let mutable currentView: DrawableImage list * DrawableText list = [],[]
+    let mutable currentView: Drawable list = []
 
     let mutable spriteBatch = Unchecked.defaultof<SpriteBatch>
 
-    let updateKeyboardInfo (keyboard: KeyboardState) existing =
+    let updateKeyboardInfo (keyboard: KeyboardState) (existing: KeyboardInfo) =
         let pressed = keyboard.GetPressedKeys() |> Set.ofArray
         {
             pressed = pressed |> Set.toList
@@ -28,24 +31,59 @@ type GameCore<'TModel> (assetsToLoad, updateModel, getView)
             keysUp = Set.difference (existing.pressed |> Set.ofList) pressed |> Set.toList
         }
 
+    let getMouseInfo (mouse: MouseState) =
+        {
+            position = mouse.X, mouse.Y
+            pressed = mouse.LeftButton = ButtonState.Pressed, mouse.RightButton = ButtonState.Pressed
+        }
+
     let asVector2 (x,y) = new Vector2(float32 x, float32 y)
     let asRectangle (x,y,width,height) = 
         new Rectangle (x,y,width,height)
+    
+    let drawImage (spriteBatch: SpriteBatch) image = 
+        let sourceRect = 
+            match image.sourceRect with 
+            | None -> Unchecked.defaultof<Nullable<Rectangle>> 
+            | Some r -> asRectangle r |> Nullable
+        let texture =
+            match Map.tryFind image.assetKey assets with
+            | Some (TextureAsset t) -> t
+            | None -> sprintf "Missing asset: %s" image.assetKey |> failwith
+            | _-> sprintf "Asset was not a Texture2D: %s" image.assetKey |> failwith
+        spriteBatch.Draw(
+            texture, asRectangle image.destRect, 
+            sourceRect, Color.White, 0.0f, Vector2.Zero, 
+            SpriteEffects.None, 0.0f)
+    
+    let drawText (spriteBatch: SpriteBatch) text =
+        let font =
+            match Map.tryFind text.assetKey assets with
+            | Some (FontAsset f) -> f
+            | None -> sprintf "Missing asset: %s" text.assetKey |> failwith
+            | _-> sprintf "Asset was not a SpriteFont: %s" text.assetKey |> failwith
+        spriteBatch.DrawString(
+            font, text.text, asVector2 text.position, Color.Black, 
+            0.0f, Vector2.Zero, float32 text.scale, SpriteEffects.None, 0.5f)
 
     override __.LoadContent() = 
         spriteBatch <- new SpriteBatch(this.GraphicsDevice)
-        textureAssets <- 
-            fst assetsToLoad
-            |> List.map (fun (key, path) -> key, this.Content.Load<Texture2D>(path))
-            |> Map.ofList
-        fontAssets <- 
-            snd assetsToLoad
-            |> List.map (fun (key, path) -> key, this.Content.Load<SpriteFont>(path))
+        assets <- 
+            assetsToLoad
+            |> List.map (fun a ->
+                match a with
+                | Texture info -> info.key, this.Content.Load<Texture2D>(info.path) |> TextureAsset
+                | Font info -> info.key, this.Content.Load<SpriteFont>(info.path) |> FontAsset)
             |> Map.ofList
 
     override __.Update(gameTime) =
         keyboardInfo <- updateKeyboardInfo (Keyboard.GetState()) keyboardInfo
-        let runState = { keyboard = keyboardInfo; elapsed = gameTime.TotalGameTime.TotalMilliseconds }
+        let mouseInfo = getMouseInfo (Mouse.GetState())
+        let runState = { 
+            elapsed = gameTime.TotalGameTime.TotalMilliseconds 
+            keyboard = keyboardInfo
+            mouse = mouseInfo
+        }
         
         currentModel <- updateModel runState currentModel
         match currentModel with
@@ -58,26 +96,10 @@ type GameCore<'TModel> (assetsToLoad, updateModel, getView)
         
         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp)
 
-        fst currentView
-            |> List.map (fun d -> d,textureAssets.[d.textureKey])
-            |> List.iter (fun (d,texture) ->
-                let sourceRect = 
-                    match d.sourceRect with 
-                    | None -> Unchecked.defaultof<Nullable<Rectangle>> 
-                    | Some r -> asRectangle r |> Nullable
-                spriteBatch.Draw(
-                    texture, asRectangle d.destRect, 
-                    sourceRect, Color.White, 0.0f, Vector2.Zero, 
-                    SpriteEffects.None, 0.0f))
-
-        spriteBatch.End()
-        spriteBatch.Begin()
-
-        snd currentView 
-            |> List.map (fun d -> d,fontAssets.[d.fontKey])
-            |> List.iter (fun (d,font) ->
-                spriteBatch.DrawString(
-                    font, d.text, asVector2 d.position, Color.Black, 
-                    0.0f, Vector2.Zero, float32 d.scale, SpriteEffects.None, 0.5f))
+        currentView
+            |> List.iter (fun d -> 
+                match d with 
+                | Image i -> drawImage spriteBatch i
+                | Text t -> drawText spriteBatch t)
 
         spriteBatch.End()

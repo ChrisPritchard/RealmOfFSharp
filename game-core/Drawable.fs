@@ -1,14 +1,18 @@
 namespace GameCore
 
-type DrawableImage = {
-    textureKey: string
+type DrawImageInfo = {
+    assetKey: string
     destRect: int * int * int * int
     sourceRect: (int * int * int * int) option
 }
 
-type DrawableText = {
-    fontKey: string
+type DrawTextInfo = {
+    assetKey: string
     text: string
     position: int * int
     scale: float
 }
+
+type Drawable = 
+| Image of DrawImageInfo
+| Text of DrawTextInfo
