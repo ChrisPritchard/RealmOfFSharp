@@ -1,45 +1,44 @@
 module View
+
 open GameCore
 open Model
 
 let assets = 
     [
-        "player", "Content/MitheralKnight"
-        "orc_club", "Content/HunterOrc"
-        "orc_spear", "Content/LuckyOrc"
-        "orc_whip", "Content/RedOrc"
-        "green", "Content/green"
-        "red", "Content/red"
-        "black", "Content/black"
-        "white", "Content/white"
-    ],
-    [
-        "default", "Content/JuraMedium"
+        Texture { key = "player"; path = "Content/MitheralKnight" }
+        Texture { key = "orc_club"; path = "Content/HunterOrc" }
+        Texture { key = "orc_spear"; path = "Content/LuckyOrc" }
+        Texture { key = "orc_whip"; path = "Content/RedOrc" }
+        Texture { key = "green"; path = "Content/green" }
+        Texture { key = "red"; path = "Content/red" }
+        Texture { key = "black"; path = "Content/black" }
+        Texture { key = "white"; path = "Content/white" }
+        Font { key = "default"; path = "Content/JuraMedium" }
     ]
 
 let idleFrames = [0..9] |> List.map (fun i -> (i * 32,0,32,32))
 
 let barElements colourKey rect percent = 
     seq {
-        yield { textureKey = "black"; destRect = rect; sourceRect = None }
+        yield { assetKey = "black"; destRect = rect; sourceRect = None }
         let (x,y,width,height) = rect
-        yield { textureKey = "white"; destRect = x+2,y+2,width-4,height-4; sourceRect = None }
+        yield { assetKey = "white"; destRect = x+2,y+2,width-4,height-4; sourceRect = None }
         let valueWidth = width - 4 |> float |> (*) percent |> int
-        yield { textureKey = colourKey; destRect = x+2,y+2,valueWidth,height-4; sourceRect = None }
+        yield { assetKey = colourKey; destRect = x+2,y+2,valueWidth,height-4; sourceRect = None }
     } |> Seq.toList
 
-let unitWithHealth position textureKey frame healthPercent = 
+let unitWithHealth position assetKey frame healthPercent = 
     let (x,y,width,height) = position
     [
-        [{ textureKey = textureKey; destRect = position; sourceRect = Some frame }]
+        [{ assetKey = assetKey; destRect = position; sourceRect = Some frame }]
         barElements "green" (x,y + height + 10,width,width / 8) healthPercent
     ] |> List.concat
 
-let selected position textureKey = 
+let selected position assetKey = 
     let (x,y,width,height) = position
     [
-        { textureKey = textureKey; destRect = position; sourceRect = None }
-        { textureKey = "white"; destRect = (x + 2, y + 2, width - 4, height - 4); sourceRect = None }
+        { assetKey = assetKey; destRect = position; sourceRect = None }
+        { assetKey = "white"; destRect = (x + 2, y + 2, width - 4, height - 4); sourceRect = None }
     ]
 
 let playerPos = (100,50,100,100)
@@ -81,32 +80,32 @@ let getView runState battle =
                     row |> List.indexed |> List.map (fun (oidx, orc) -> 
                         let isSelected = (ridx * orcsPerRow) + oidx = targetIndex
                         getOrcUnit ridx oidx isSelected idleFrame orc))
-        } |> Seq.toList |> List.concat
+        } |> Seq.toList |> List.concat |> List.map Image
 
     let text = 
         seq {
             match battle.state with
             | OrcTurn _ -> 
-                yield { fontKey = "default"; text = "The Orcs Are Attacking!"; position = 80,350; scale = 0.5 }
+                yield { assetKey = "default"; text = "The Orcs Are Attacking!"; position = 80,350; scale = 0.5 }
             | GameOver ->
-                yield { fontKey = "default"; text = "Game Over!"; position = 200,350; scale = 1.0 }
-                yield { fontKey = "default"; text = "Press R to restart or ESC to exit"; position = 200,410; scale = 0.3 }
+                yield { assetKey = "default"; text = "Game Over!"; position = 200,350; scale = 1.0 }
+                yield { assetKey = "default"; text = "Press R to restart or ESC to exit"; position = 200,410; scale = 0.3 }
             | Victory ->
-                yield { fontKey = "default"; text = "Victory!"; position = 200,350; scale = 1.0 }
-                yield { fontKey = "default"; text = "Press R to restart or ESC to exit"; position = 200,410; scale = 0.3 }
+                yield { assetKey = "default"; text = "Victory!"; position = 200,350; scale = 1.0 }
+                yield { assetKey = "default"; text = "Press R to restart or ESC to exit"; position = 200,410; scale = 0.3 }
             | PlayerTurn state ->
-                yield { fontKey = "default"; text = "Player Turn"; position = 80,200; scale = 0.5 }
+                yield { assetKey = "default"; text = "Player Turn"; position = 80,200; scale = 0.5 }
                 let actionsStatus = sprintf "Actions Remaining: %i" state.actionsRemaining
-                yield { fontKey = "default"; text = actionsStatus; position = 80,240; scale = 0.3 }
+                yield { assetKey = "default"; text = actionsStatus; position = 80,240; scale = 0.3 }
                 if state.actionsRemaining = 0 then
-                    yield { fontKey = "default"; text = "Press ENTER to"; position = 80,260; scale = 0.3 } 
-                    yield { fontKey = "default"; text = " end turn"; position = 80,280; scale = 0.3 } 
+                    yield { assetKey = "default"; text = "Press ENTER to"; position = 80,260; scale = 0.3 } 
+                    yield { assetKey = "default"; text = " end turn"; position = 80,280; scale = 0.3 } 
                 else
-                    yield { fontKey = "default"; text = "Press S to stab,"; position = 80,260; scale = 0.3 }
-                    yield { fontKey = "default"; text = "Press F to flail,"; position = 80,280; scale = 0.3 }
-                    yield { fontKey = "default"; text = "Press R to recover,"; position = 80,300; scale = 0.3 }
-                    yield { fontKey = "default"; text = "And Left or Right"; position = 80,320; scale = 0.3 }
-                    yield { fontKey = "default"; text = " to change target"; position = 80,340; scale = 0.3 }
-        } |> Seq.toList
+                    yield { assetKey = "default"; text = "Press S to stab,"; position = 80,260; scale = 0.3 }
+                    yield { assetKey = "default"; text = "Press F to flail,"; position = 80,280; scale = 0.3 }
+                    yield { assetKey = "default"; text = "Press R to recover,"; position = 80,300; scale = 0.3 }
+                    yield { assetKey = "default"; text = "And Left or Right"; position = 80,320; scale = 0.3 }
+                    yield { assetKey = "default"; text = " to change target"; position = 80,340; scale = 0.3 }
+        } |> Seq.toList |> List.map Text
 
-    images, text
+    images @ text
