@@ -1,5 +1,4 @@
-﻿open System
-open GameCore
+﻿open GameCore
 open Microsoft.Xna.Framework.Input
 
 (*
@@ -11,13 +10,11 @@ open Microsoft.Xna.Framework.Input
 
 let assets = 
     [
-        "empty", "Content/empty"
-        "head", "Content/head"
-        "snake", "Content/snake"
-        "goo", "Content/goo"
-    ], 
-    [
-        "default", "Content/JuraMedium"
+        Texture { key = "empty"; path = "Content/empty" }
+        Texture { key = "head"; path = "Content/head" }
+        Texture { key = "snake"; path = "Content/snake" }
+        Texture { key = "goo"; path = "Content/goo" }
+        Font { key = "default"; path = "Content/JuraMedium" }
     ]
 
 type Dim = { x: int; y: int }
@@ -33,7 +30,7 @@ type GameModel = {
     loss: bool
 } and Dir = | North | East | South | West
 
-let random = new Random ()
+let random = new System.Random ()
 let rec randomGoo snake = 
     let newGoo = random.Next world.x, random.Next world.y
     if snake |> List.contains newGoo
@@ -121,24 +118,25 @@ let getView _ model =
                 elif List.head model.snake = point then "head"
                 elif List.contains point model.snake then "snake"
                 else "empty"
-            { textureKey = key; destRect = calculatePos point; sourceRect = None }))
+            { assetKey = key; destRect = calculatePos point; sourceRect = None }))
+        |> List.map Image
     
     if model.loss then
-        images, 
-        [ { 
-            fontKey = "default";
+        images @
+        [ Text { 
+            assetKey = "default";
             text = "You Lose!";
             position = 20, (world.y / 2) * tileSize.y;
             scale = 0.5
           };
-          {
-              fontKey = "default";
+          Text {
+              assetKey = "default";
               text = "Press 'R' to Restart or Escape to exit";
               position = 20, (world.y / 2) * tileSize.y + 40;
               scale = 0.4
           } ]
     else 
-        images, []
+        images
 
 [<EntryPoint>]
 let main _ =
