@@ -8,7 +8,7 @@ open Microsoft.Xna.Framework.Input
     (except for the Keys enum and a reference to the font asset) MonoGame agnostic
 *)
 
-let assets = [],[ "default", "Content/JuraMedium" ]
+let assets = [ Font { key = "default"; path = "Content/JuraMedium" } ]
 
 type CountingGameModel = {
     guess: int
@@ -42,7 +42,7 @@ let updateModel (runState: RunState) currentModel =
             Some gameState
 
 let getView _ model = 
-    let baseText = { fontKey = "default"; text = ""; position = (0,0); scale = 0.4 }
+    let baseText = { assetKey = "default"; text = ""; position = (0,0); scale = 0.4 }
     let text = 
         if model.win then
             [
@@ -55,7 +55,7 @@ let getView _ model =
                 { baseText with text = sprintf "My guess is %i" model.guess; position = (50,50) };
                 { baseText with text = "Press Up if too low, Down if too high, or 'C' if correct"; position = (50,80); scale = 0.3 };
             ]
-    [], text
+    text |> List.map Text
 
 [<EntryPoint>]
 let main _ =
