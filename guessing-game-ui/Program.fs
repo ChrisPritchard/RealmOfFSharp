@@ -59,6 +59,6 @@ let getView _ model =
 
 [<EntryPoint>]
 let main _ =
-    use game = new GameCore<CountingGameModel>(assets, updateModel, getView)
+    use game = new GameCore<CountingGameModel>(Windowed (800,600), assets, updateModel, getView)
     game.Run()
     0

@@ -5,15 +5,19 @@ open Microsoft.Xna.Framework.Graphics;
 open Microsoft.Xna.Framework.Input;
 open System
 
+type Resolution =
+| Windowed of int * int
+| FullScreen of int * int
+
 type private Content =
 | TextureAsset of Texture2D
 | FontAsset of SpriteFont
 
-type GameCore<'TModel> (assetsToLoad, updateModel, getView)
+type GameCore<'TModel> (resolution, assetsToLoad, updateModel, getView)
     as this = 
     inherit Game()
 
-    do new GraphicsDeviceManager(this) |> ignore
+    let mutable graphics = new GraphicsDeviceManager(this)
 
     let mutable assets = Map.empty<string, Content>
 
@@ -22,6 +26,16 @@ type GameCore<'TModel> (assetsToLoad, updateModel, getView)
     let mutable currentView: Drawable list = []
 
     let mutable spriteBatch = Unchecked.defaultof<SpriteBatch>
+
+    do 
+        match resolution with
+        | FullScreen (w,h) -> 
+            graphics.PreferredBackBufferWidth <- w
+            graphics.PreferredBackBufferHeight <- h
+            graphics.IsFullScreen <- true
+        | Windowed (w,h) -> 
+            graphics.PreferredBackBufferWidth <- w
+            graphics.PreferredBackBufferHeight <- h
 
     let updateKeyboardInfo (keyboard: KeyboardState) (existing: KeyboardInfo) =
         let pressed = keyboard.GetPressedKeys() |> Set.ofArray
