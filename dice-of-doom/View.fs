@@ -7,6 +7,7 @@ let assets =
         Texture { key = "hex_flat"; path = "Content/hexFlat" }
         Texture { key = "hex_pointy"; path = "Content/hexPointy" }
         Font { key = "font"; path = "Content/JuraMedium" }
+        Texture { key = "pointer"; path = "Content/pointer" }
     ]
 
 let getView runState model =
@@ -21,5 +22,8 @@ let getView runState model =
 
     let texture = match cubeTop with | Flat -> "hex_flat" | _ -> "hex_pointy"
     let images = points |> List.map (rectFrom >> fun rect -> Image { assetKey = texture; destRect = rect; sourceRect = None })
-         
-    images
+
+    let (mx,my) = runState.mouse.position
+    let cursor = Image { assetKey = "pointer"; destRect = mx,my,27,27; sourceRect = Some (0,0,18,18) }         
+
+    images @ [cursor]
