@@ -61,20 +61,20 @@ type Cube with
             | FlatTop enm -> cubeDirections.[int enm]
         Cube.add adj cube
     
-    static member neighbours cubeTop cube = 
+    static member neighbours hexTop cube = 
         let asCubes valueArray =
             valueArray |> Array.map (fun i -> cubeDirections.[i]) 
             |> Array.toList |> List.map (Cube.add cube)
-        match cubeTop with
+        match hexTop with
         | Pointy -> System.Enum.GetValues(typeof<PointyTopDir>) :?> PointyTopDir [] |> Array.map int |> asCubes
         | Flat -> System.Enum.GetValues(typeof<FlatTopDir>) :?> FlatTopDir [] |> Array.map int |> asCubes
 
     static member distance target cube = 
         (abs(target.x - cube.x) + abs(target.y - cube.y) + abs(target.z - cube.z)) / 2.
 
-    static member toPixel cubeTop size cube = 
+    static member toPixel hexTop size cube = 
         let hex = Cube.toAxial cube
-        match cubeTop with
+        match hexTop with
         | Flat -> 
             let x = size * (3./2. * hex.q)
             let y = size * (sqrt3/2. * hex.q  + sqrt3 * hex.r)
@@ -84,8 +84,8 @@ type Cube with
             let y = size * (3./2. * hex.r)
             x,y
        
-    static member fromPixel cubeTop size (x,y) =
-        match cubeTop with
+    static member fromPixel hexTop size (x,y) =
+        match hexTop with
         | Flat ->
             let q = (2.0/3.0 * x) / size
             let r = (-1.0/3.0 * x + sqrt3/3.0 * y) / size
@@ -100,7 +100,7 @@ type Hex with
     static member height = Cube.height
     static member add target hex = Hex.toCube hex |> Cube.add (Hex.toCube target) |> Cube.toAxial
     static member neighbour dir hex = Hex.toCube hex |> Cube.neighbour dir |> Cube.toAxial
-    static member neighbours cubeTop hex = Hex.toCube hex |> Cube.neighbours cubeTop |> List.map Cube.toAxial
+    static member neighbours hexTop hex = Hex.toCube hex |> Cube.neighbours hexTop |> List.map Cube.toAxial
     static member distance target hex = Hex.toCube hex |> Cube.distance (Hex.toCube target)
     static member toPixel hexTop size hex = Hex.toCube hex |> Cube.toPixel hexTop size
     static member fromPixel hexTop size (x,y) = Cube.fromPixel hexTop size (x,y) |> Cube.toAxial
