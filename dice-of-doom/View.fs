@@ -16,14 +16,14 @@ let getView runState model =
     
     let cubeTop = Pointy
     let size = 64.
-    let width,height = Cube.width cubeTop size, Cube.height cubeTop size
+    let width,height = Hex.width cubeTop size, Hex.height cubeTop size
     
-    let points = hexes |> List.map (fun h -> h, Hex.toCube h |> Cube.toPixel cubeTop size)
+    let points = hexes |> List.map (fun h -> h, h |> Hex.toPixel cubeTop size)
     let (ox,oy) = (100.,100.)
     let rectFrom (x,y) = (ox + x) - width/2.0 |> int, (oy + y) - height/2.0 |> int, ceil width |> int, ceil height |> int 
 
     let (mx,my) = runState.mouse.position
-    let mouseHex = Cube.fromPixel cubeTop size (float mx - ox, float my - oy) |> Cube.toAxial
+    let mouseHex = Hex.fromPixel cubeTop size (float mx - ox, float my - oy)
 
     let texture = match cubeTop with | Flat -> "hex_flat" | _ -> "hex_pointy"
     let images = points |> List.map (fun (hex,point) ->
