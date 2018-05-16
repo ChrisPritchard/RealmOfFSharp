@@ -19,10 +19,11 @@ let getView runState model =
     let width,height = Cube.width cubeTop size, Cube.height cubeTop size
     
     let points = hexes |> List.map (fun h -> h, Hex.toCube h |> Cube.toPixel cubeTop size)
-    let rectFrom (x,y) = x - width/2.0 |> int, y - height/2.0 |> int, ceil width |> int, ceil height |> int 
+    let (ox,oy) = (100.,100.)
+    let rectFrom (x,y) = (ox + x) - width/2.0 |> int, (oy + y) - height/2.0 |> int, ceil width |> int, ceil height |> int 
 
     let (mx,my) = runState.mouse.position
-    let mouseHex = Cube.fromPixel cubeTop size (float mx, float my) |> Cube.toAxial
+    let mouseHex = Cube.fromPixel cubeTop size (float mx - ox, float my - oy) |> Cube.toAxial
 
     let texture = match cubeTop with | Flat -> "hex_flat" | _ -> "hex_pointy"
     let images = points |> List.map (fun (hex,point) ->
