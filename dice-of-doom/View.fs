@@ -1,6 +1,7 @@
 module View
 open GameCore
 open Hex
+open Microsoft.Xna.Framework
 
 let assets = 
     [
@@ -17,13 +18,17 @@ let getView runState model =
     let size = 64.
     let width,height = Cube.width cubeTop size, Cube.height cubeTop size
     
-    let points = hexes |> List.map (Hex.toCube >> Cube.toPixel cubeTop size)
+    let points = hexes |> List.map (fun h -> h, Hex.toCube h |> Cube.toPixel cubeTop size)
     let rectFrom (x,y) = x - width/2.0 |> int, y - height/2.0 |> int, ceil width |> int, ceil height |> int 
 
-    let texture = match cubeTop with | Flat -> "hex_flat" | _ -> "hex_pointy"
-    let images = points |> List.map (rectFrom >> fun rect -> Image { assetKey = texture; destRect = rect; sourceRect = None })
-
     let (mx,my) = runState.mouse.position
+    let mouseHex = Cube.fromPixel cubeTop size (float mx, float my) |> Cube.toAxial
+
+    let texture = match cubeTop with | Flat -> "hex_flat" | _ -> "hex_pointy"
+    let images = points |> List.map (fun (hex,point) ->
+        let drawable = { assetKey = texture; destRect = rectFrom point; sourceRect = None }
+        if mouseHex = hex then ColouredImage (Color.Red, drawable) else Image drawable)
+
     let cursor = Image { assetKey = "pointer"; destRect = mx,my,27,27; sourceRect = Some (0,0,18,18) }         
 
     images @ [cursor]

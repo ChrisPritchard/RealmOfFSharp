@@ -1,4 +1,5 @@
 namespace GameCore
+open Microsoft.Xna.Framework
 
 type DrawImageInfo = {
     assetKey: string
@@ -15,4 +16,5 @@ type DrawTextInfo = {
 
 type Drawable = 
 | Image of DrawImageInfo
+| ColouredImage of Color * DrawImageInfo
 | Text of DrawTextInfo

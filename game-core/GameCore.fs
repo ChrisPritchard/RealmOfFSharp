@@ -41,7 +41,7 @@ type GameCore<'TModel> (assetsToLoad, updateModel, getView)
     let asRectangle (x,y,width,height) = 
         new Rectangle (x,y,width,height)
     
-    let drawImage (spriteBatch: SpriteBatch) image = 
+    let drawImage (spriteBatch: SpriteBatch) image colour = 
         let sourceRect = 
             match image.sourceRect with 
             | None -> Unchecked.defaultof<Nullable<Rectangle>> 
@@ -53,7 +53,7 @@ type GameCore<'TModel> (assetsToLoad, updateModel, getView)
             | _-> sprintf "Asset was not a Texture2D: %s" image.assetKey |> failwith
         spriteBatch.Draw(
             texture, asRectangle image.destRect, 
-            sourceRect, Color.White, 0.0f, Vector2.Zero, 
+            sourceRect, colour, 0.0f, Vector2.Zero, 
             SpriteEffects.None, 0.0f)
     
     let drawText (spriteBatch: SpriteBatch) text =
@@ -97,9 +97,10 @@ type GameCore<'TModel> (assetsToLoad, updateModel, getView)
         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp)
 
         currentView
-            |> List.iter (fun d -> 
-                match d with 
-                | Image i -> drawImage spriteBatch i
+            |> List.iter (fun drawable -> 
+                match drawable with 
+                | Image i -> drawImage spriteBatch i Color.White
+                | ColouredImage (c,i) -> drawImage spriteBatch i c
                 | Text t -> drawText spriteBatch t)
 
         spriteBatch.End()
