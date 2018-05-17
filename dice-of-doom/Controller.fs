@@ -22,18 +22,18 @@ let playerMove (runState:RunState) gameModel moves =
     let canPass = List.tryPick (fun (m,gt) -> 
         match m with | Pass -> Some gt | _ -> None) moves
 
-    let attackSource = List.tryFind (fun ((a,_), _) -> a.hex = hex) possibleAttacks
-    let attackTarget = List.tryFind (fun ((_,t), _) -> t.hex = hex) possibleAttacks
+    let overAttackSource = List.tryFind (fun ((a,_), _) -> a.hex = hex) possibleAttacks
+    let overAttackTarget = List.tryFind (fun ((_,t), _) -> t.hex = hex) possibleAttacks
 
     if leftPressed then
         match canPass with
         | Some gt when rectContains (mx,my) View.passButton -> 
             { gameModel with source = None; gameTree = gt; }
         | _ -> 
-            match attackSource with
+            match overAttackSource with
             | Some ((a,_),_) -> { gameModel with source = Some a }
             | None when gameModel.source <> None -> 
-                match attackTarget with
+                match overAttackTarget with
                 | Some (_,gt) -> { gameModel with source = None; gameTree = gt }
                 | None -> gameModel
             | None -> gameModel
