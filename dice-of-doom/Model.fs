@@ -4,9 +4,7 @@ open Hex
 let cubeTop = Pointy
 
 type DiceGameModel = {
-    player: int
-    source: int option
-    target: int option
+    source: Territory option
     gameTree: GameTree
 } and Territory = {
     owner: int
@@ -14,6 +12,7 @@ type DiceGameModel = {
     hex: Hex
 } and GameTree = {
     board: Territory list
+    player: int
     moves: (Move * GameTree) list option
 } and Move = 
     | Pass
@@ -57,11 +56,12 @@ let generateOutcomes (territories:Territory list) (attacks: Move list) =
 
 let rec generateTree territories player canPass =
     let options = generateMoves territories player canPass
-    if List.isEmpty options then { board = territories; moves = None }
+    if List.isEmpty options then { board = territories; player = player; moves = None }
     else
         let nextPlayer = if player + 1 = players then 0 else player + 1
         {
             board = territories
+            player = player
             moves = generateOutcomes territories options 
                 |> List.map (fun (m,t) -> 
                     match m with
