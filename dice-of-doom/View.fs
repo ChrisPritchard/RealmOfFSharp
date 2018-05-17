@@ -1,8 +1,14 @@
 module View
 open GameCore
 open Hex
+open Model
 open Microsoft.Xna.Framework
 
+let sw,sh = (1024,768)
+let hexSize = 64.
+let hexWidth,hexHeight = Hex.width cubeTop hexSize, Hex.height cubeTop hexSize
+
+let resolution = Windowed (sw,sh)
 let assets = 
     [
         Texture { key = "hex_flat"; path = "Content/hexFlat" }
@@ -12,18 +18,14 @@ let assets =
     ]
 
 let getView runState model =
-    let hexes = [0.0..5.0] |> List.collect (fun q -> [0.0..5.0] |> List.map (fun r -> { q = q; r = r }))
-    
-    let cubeTop = Pointy
-    let size = 64.
-    let width,height = Hex.width cubeTop size, Hex.height cubeTop size
-    
-    let points = hexes |> List.map (fun h -> h, h |> Hex.toPixel cubeTop size)
+    let hexes = model.gameTree.board |> List.map (fun o -> o.hex)
+    let points = hexes |> List.map (fun h -> h, h |> Hex.toPixel cubeTop hexSize)
+
     let (ox,oy) = (100.,100.)
-    let rectFrom (x,y) = (ox + x) - width/2.0 |> int, (oy + y) - height/2.0 |> int, ceil width |> int, ceil height |> int 
+    let rectFrom (x,y) = (ox + x) - hexWidth/2.0 |> int, (oy + y) - hexHeight/2.0 |> int, ceil hexWidth |> int, ceil hexHeight |> int 
 
     let (mx,my) = runState.mouse.position
-    let mouseHex = Hex.fromPixel cubeTop size (float mx - ox, float my - oy)
+    let mouseHex = Hex.fromPixel cubeTop hexSize (float mx - ox, float my - oy)
 
     let texture = match cubeTop with | Flat -> "hex_flat" | _ -> "hex_pointy"
     let images = points |> List.map (fun (hex,point) ->
