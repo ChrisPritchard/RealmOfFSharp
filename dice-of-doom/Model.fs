@@ -9,7 +9,6 @@ type DiceGameModel = {
     target: int option
     gameTree: GameTree
 } and Territory = {
-    index: int
     owner: int
     dice: int
     hex: Hex
@@ -18,16 +17,17 @@ type DiceGameModel = {
     moves: (Move * GameTree) list option
 } and Move = 
     | Pass
-    | Attack of int * int
+    | Attack of Territory * Territory
 
 let reinforcementPool = 10
 let players = 2
 
 let startTerritories = [
-    { index = 0; owner = 0; dice = 2; hex = { q = 0.; r = 0. } }
-    { index = 0; owner = 0; dice = 2; hex = { q = 0.; r = 1. } }
-    { index = 1; owner = 1; dice = 1; hex = { q = 1.; r = 0. } }
-    { index = 1; owner = 1; dice = 2; hex = { q = 2.; r = 0. } }
+    { owner = 0; dice = 2; hex = { q = 0.; r = 0. } }
+    { owner = 0; dice = 2; hex = { q = 0.; r = 1. } }
+    { owner = 1; dice = 1; hex = { q = 1.; r = 0. } }
+    { owner = 1; dice = 2; hex = { q = 2.; r = 0. } }
+    { owner = 1; dice = 2; hex = { q = 1.; r = 1. } }
 ]
 
 let generateMoves territories player canPass = 
@@ -42,24 +42,18 @@ let generateMoves territories player canPass =
                 neighbours 
                     |> List.map (fun h -> List.tryFind (isValid h source.dice) territories)
                     |> List.choose id
-            validTargets |> List.map (fun target -> Attack (source.index,target.index)))
+            validTargets |> List.map (fun target -> Attack (source,target)))
     if canPass then [Pass] @ attacks else attacks
-
-let private replace index newItem lst = 
-    List.take index lst @ [newItem] @ List.skip (index + 1) lst
 
 let generateOutcomes (territories:Territory list) (attacks: Move list) = 
     attacks |> List.map (fun move -> 
         match move with
         | Pass -> (Pass, territories)
-        | Attack (a,b) ->
-            let source = territories.[a]
-            let target = territories.[b]
+        | Attack (source,target) ->
             let aftermath = 
-                territories 
-                |> replace a { source with dice = 1 } 
-                |> replace b { target with owner = source.owner; dice = source.dice - 1 }
-            (Attack (a,b), aftermath))
+                List.except [source;target] territories 
+                @ [{ source with dice = 1 };{ target with owner = source.owner; dice = source.dice - 1 }]
+            (Attack (source,target), aftermath))
 
 let rec generateTree territories player canPass =
     let options = generateMoves territories player canPass
