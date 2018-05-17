@@ -26,6 +26,15 @@ let private rectFrom (ox,oy) (x,y) =
     ceil hexHeight |> int 
 
 let getView runState model =
+
+    // hexes
+        // colour
+        // fading on select / options
+    // dice numbers
+    // pass button visibility
+    // player turn display
+    // game over / reset
+
     let hexes = model.gameTree.board |> List.map (fun o -> o.hex)
     let points = hexes |> List.map (fun h -> h, h |> Hex.toPixel hexTop hexSize)
 
