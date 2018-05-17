@@ -1,7 +1,7 @@
 module Model
 open Hex
 
-let cubeTop = Pointy
+let hexTop = Pointy
 
 type DiceGameModel = {
     source: Territory option
@@ -36,7 +36,7 @@ let generateMoves territories player canPass =
         territories 
         |> List.filter (fun t -> t.owner = player)
         |> List.collect (fun source -> 
-            let neighbours = Hex.neighbours cubeTop source.hex
+            let neighbours = Hex.neighbours hexTop source.hex
             let validTargets = 
                 neighbours 
                     |> List.map (fun h -> List.tryFind (isValid h source.dice) territories)

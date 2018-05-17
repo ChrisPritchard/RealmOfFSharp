@@ -9,28 +9,33 @@ let initialModel = {
     gameTree = generateTree startTerritories 0 false
 }
 
-let checkForMove (runState:RunState) gameModel moves =
-    let (left,_) = runState.mouse.pressed
+let rectContains (px,py) (x,y,w,h) = 
+    px >= x && py >= y && px <= x + w && py <= y + h
+
+let playerMove (runState:RunState) gameModel moves =
+    let (leftPressed,_) = runState.mouse.pressed
     let (mx, my) = runState.mouse.position
-    let hex = Hex.fromPixel cubeTop hexSize (float mx, float my)
+    let hex = Hex.fromPixel hexTop hexSize (float mx, float my)
 
-    let attacks = List.choose (fun (m,gt) -> 
+    let possibleAttacks = List.choose (fun (m,gt) -> 
         match m with | Attack (a,b) -> Some ((a,b),gt) | Pass -> None) moves
+    let canPass = List.tryPick (fun (m,gt) -> 
+        match m with | Pass -> Some gt | _ -> None) moves
 
-    if left then
-        let pickSource = List.tryFind (fun ((a,_), _) -> a.hex = hex) attacks
-        match pickSource with
-        | Some ((a,_),_) -> { gameModel with source = Some a }
-        | None when gameModel.source <> None -> 
-            let pickTarget = List.tryFind (fun ((_,t), _) -> t.hex = hex) attacks
-            match pickTarget with
-            | Some (_,gt) -> { gameModel with source = None; gameTree = gt }
-            | None -> gameModel
-        | None -> 
-            let pass = List.tryPick (fun (m,gt) -> match m with | Pass -> Some gt | _ -> None) moves
-            match pass with
-            | Some gt when Rectangle.contains (mx,my) View.passButton -> 
-                { gameModel with source = None; gameTree = gt; }
+    let attackSource = List.tryFind (fun ((a,_), _) -> a.hex = hex) possibleAttacks
+    let attackTarget = List.tryFind (fun ((_,t), _) -> t.hex = hex) possibleAttacks
+
+    if leftPressed then
+        match canPass with
+        | Some gt when rectContains (mx,my) View.passButton -> 
+            { gameModel with source = None; gameTree = gt; }
+        | _ -> 
+            match attackSource with
+            | Some ((a,_),_) -> { gameModel with source = Some a }
+            | None when gameModel.source <> None -> 
+                match attackTarget with
+                | Some (_,gt) -> { gameModel with source = None; gameTree = gt }
+                | None -> gameModel
             | None -> gameModel
     else gameModel
 
@@ -41,4 +46,4 @@ let updateModel runState currentModel =
         match model.gameTree.moves with
         | None -> currentModel
         | Some moves -> 
-            checkForMove runState model moves |> Some
+            playerMove runState model moves |> Some
