@@ -76,8 +76,14 @@ type GameCore<'TModel> (resolution, assetsToLoad, updateModel, getView)
             | Some (FontAsset f) -> f
             | None -> sprintf "Missing asset: %s" text.assetKey |> failwith
             | _-> sprintf "Asset was not a SpriteFont: %s" text.assetKey |> failwith
+        let position =
+            match text.origin with
+            | TopLeft -> asVector2 text.position
+            | Centre -> 
+                let size = Vector2.Divide (font.MeasureString(text.text), 2.f / float32 text.scale)
+                Vector2.Subtract (asVector2 text.position, size)
         spriteBatch.DrawString(
-            font, text.text, asVector2 text.position, colour, 
+            font, text.text, position, colour, 
             0.0f, Vector2.Zero, float32 text.scale, SpriteEffects.None, 0.5f)
 
     override __.LoadContent() = 

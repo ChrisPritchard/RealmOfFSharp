@@ -52,8 +52,8 @@ let getView runState model =
     let hexDisplay = hexes |> List.collect (fun (territory,point) ->
         let drawable = { assetKey = texture; destRect = rectFrom (ox,oy) point; sourceRect = None }
         let (px,py) = point
-        let labelPos = (int (px + ox - hexWidth/5.), int (py + oy - hexHeight/4.))
-        let diceLabel = ColouredText (Color.White, { assetKey = "default";text = string territory.dice;position = labelPos;scale=1. })
+        let labelPos = (int (px + ox), int (py + oy))
+        let diceLabel = ColouredText (Color.White, { assetKey = "default";text = string territory.dice;position = labelPos;origin = Centre;scale=1. })
         match territory.owner with
         | 0 -> 
             [ColouredImage (Color.Red, drawable); diceLabel]

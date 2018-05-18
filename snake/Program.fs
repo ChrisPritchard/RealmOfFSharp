@@ -124,15 +124,17 @@ let getView _ model =
     if model.loss then
         images @
         [ Text { 
-            assetKey = "default";
-            text = "You Lose!";
-            position = 20, (world.y / 2) * tileSize.y;
+            assetKey = "default"
+            text = "You Lose!"
+            position = 20, (world.y / 2) * tileSize.y
+            origin = TopLeft
             scale = 0.5
           };
           Text {
-              assetKey = "default";
-              text = "Press 'R' to Restart or Escape to exit";
-              position = 20, (world.y / 2) * tileSize.y + 40;
+              assetKey = "default"
+              text = "Press 'R' to Restart or Escape to exit"
+              position = 20, (world.y / 2) * tileSize.y + 40
+              origin = TopLeft
               scale = 0.4
           } ]
     else 

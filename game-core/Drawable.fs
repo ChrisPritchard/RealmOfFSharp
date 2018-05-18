@@ -1,6 +1,8 @@
 namespace GameCore
 open Microsoft.Xna.Framework
 
+type Origin = | TopLeft | Centre
+
 type DrawImageInfo = {
     assetKey: string
     destRect: int * int * int * int
@@ -11,6 +13,7 @@ type DrawTextInfo = {
     assetKey: string
     text: string
     position: int * int
+    origin: Origin
     scale: float
 }
 

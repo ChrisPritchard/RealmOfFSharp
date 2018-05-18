@@ -42,7 +42,7 @@ let updateModel (runState: RunState) currentModel =
             Some gameState
 
 let getView _ model = 
-    let baseText = { assetKey = "default"; text = ""; position = (0,0); scale = 0.4 }
+    let baseText = { assetKey = "default"; text = ""; position = (0,0); origin = TopLeft; scale = 0.4 }
     let text = 
         if model.win then
             [
