@@ -17,7 +17,7 @@ type FlatTopDir = | SouthEast = 0 | NorthEast = 1 | North = 2 | NorthWest = 3 | 
 type Dir = | PointyTop of PointyTopDir | FlatTop of FlatTopDir
 
 let private cubeDirections = [
-    { x = 1.; y = -1.; z = 0. }; { x = 1.; y = 0.; z = 1. }; { x = 0.; y = 1.; z = 1. }
+    { x = 1.; y = -1.; z = 0. }; { x = 1.; y = 0.; z = -1. }; { x = 0.; y = 1.; z = -1. }
     { x = -1.; y = 1.; z = 0. }; { x = -1.; y = 0.; z = 1. }; { x = 0.; y = -1.; z = 1. }; 
 ]
 
