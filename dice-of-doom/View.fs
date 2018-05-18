@@ -46,9 +46,6 @@ let getView runState model =
         let chunk = (runState.elapsed / 50.) % 50. |> int |> (*) 10
         if chunk > 255 then 255 - (chunk - 255) |> byte else byte chunk
 
-    // player turn display
-    // game over / reset
-
     let (ox,oy) = calculateOffset model.gameTree.board
     let hexes = 
         model.gameTree.board 
@@ -88,4 +85,31 @@ let getView runState model =
     let (mx,my) = runState.mouse.position
     let cursor = Image { assetKey = "pointer"; destRect = mx,my,27,27; sourceRect = Some (0,0,18,18) }         
 
-    hexDisplay @ passButton @ [cursor]
+    let text = 
+        match model.gameTree.moves with
+        | None -> 
+            let winner = 
+                model.gameTree.board
+                |> List.groupBy (fun t -> t.owner)
+                |> List.map (fun (o,tl) -> o,List.length tl)
+                |> List.maxBy (fun (_,l) -> l)
+                |> fst
+            [
+                Text { 
+                assetKey = "default"
+                text = "Game Over!"
+                position = (sw/2,sh/2)
+                origin = Centre;scale=2. }
+                Text { 
+                assetKey = "default"
+                text = sprintf "Player %i Wins" winner
+                position = (sw/2,sh/2 + 100)
+                origin = Centre;scale=1. }
+            ]
+        | _ -> [Text { 
+            assetKey = "default"
+            text = sprintf "Player %i's Turn" model.gameTree.player
+            position = (sw/2,100)
+            origin = Centre;scale=1. }]
+
+    hexDisplay @ passButton @ text @ [cursor]
