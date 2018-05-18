@@ -70,14 +70,14 @@ type GameCore<'TModel> (resolution, assetsToLoad, updateModel, getView)
             sourceRect, colour, 0.0f, Vector2.Zero, 
             SpriteEffects.None, 0.0f)
     
-    let drawText (spriteBatch: SpriteBatch) text =
+    let drawText (spriteBatch: SpriteBatch) text colour =
         let font =
             match Map.tryFind text.assetKey assets with
             | Some (FontAsset f) -> f
             | None -> sprintf "Missing asset: %s" text.assetKey |> failwith
             | _-> sprintf "Asset was not a SpriteFont: %s" text.assetKey |> failwith
         spriteBatch.DrawString(
-            font, text.text, asVector2 text.position, Color.Black, 
+            font, text.text, asVector2 text.position, colour, 
             0.0f, Vector2.Zero, float32 text.scale, SpriteEffects.None, 0.5f)
 
     override __.LoadContent() = 
@@ -115,6 +115,7 @@ type GameCore<'TModel> (resolution, assetsToLoad, updateModel, getView)
                 match drawable with 
                 | Image i -> drawImage spriteBatch i Color.White
                 | ColouredImage (c,i) -> drawImage spriteBatch i c
-                | Text t -> drawText spriteBatch t)
+                | Text t -> drawText spriteBatch t Color.Black
+                | ColouredText (c,t) -> drawText spriteBatch t c)
 
         spriteBatch.End()

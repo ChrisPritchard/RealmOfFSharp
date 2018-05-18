@@ -18,3 +18,4 @@ type Drawable =
 | Image of DrawImageInfo
 | ColouredImage of Color * DrawImageInfo
 | Text of DrawTextInfo
+| ColouredText of Color * DrawTextInfo

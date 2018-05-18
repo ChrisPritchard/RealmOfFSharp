@@ -13,19 +13,19 @@ let rectContains (px,py) (x,y,w,h) =
     px >= x && py >= y && px <= x + w && py <= y + h
 
 let playerMove (runState:RunState) gameModel moves =
-    let (leftPressed,_) = runState.mouse.pressed
-    let (mx, my) = runState.mouse.position
-    let hex = Hex.fromPixel hexTop hexSize (float mx, float my)
 
     let possibleAttacks = List.choose (fun (m,gt) -> 
         match m with | Attack (a,b) -> Some ((a,b),gt) | Pass -> None) moves
     let canPass = List.tryPick (fun (m,gt) -> 
         match m with | Pass -> Some gt | _ -> None) moves
 
-    let overAttackSource = List.tryFind (fun ((a,_), _) -> a.hex = hex) possibleAttacks
-    let overAttackTarget = List.tryFind (fun ((_,t), _) -> t.hex = hex) possibleAttacks
+    let (mx, my) = runState.mouse.position
+    let (ox, oy) = calculateOffset gameModel.gameTree.board
+    let mouseHex = Hex.fromPixel hexTop hexSize (float mx - ox, float my - oy)
+    let overAttackSource = List.tryFind (fun ((a,_), _) -> a.hex = mouseHex) possibleAttacks
+    let overAttackTarget = List.tryFind (fun ((_,t), _) -> t.hex = mouseHex) possibleAttacks
 
-    if leftPressed then
+    if fst runState.mouse.pressed then
         match canPass with
         | Some gt when rectContains (mx,my) View.passButton -> 
             { gameModel with source = None; gameTree = gt; }
