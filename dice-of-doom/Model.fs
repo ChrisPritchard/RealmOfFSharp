@@ -5,6 +5,7 @@ let hexTop = Pointy
 
 type DiceGameModel = {
     source: Territory option
+    reinforcements: int
     gameTree: GameTree
 } and Territory = {
     owner: int
@@ -18,16 +19,15 @@ type DiceGameModel = {
     | Pass
     | Attack of Territory * Territory
 
-let reinforcementPool = 10
 let players = 2
+let maxDice = 3
 
-let startTerritories = [
-    { owner = 0; dice = 2; hex = { q = 0.; r = 0. } }
-    { owner = 0; dice = 2; hex = { q = 0.; r = 1. } }
-    { owner = 1; dice = 1; hex = { q = 1.; r = 0. } }
-    { owner = 1; dice = 2; hex = { q = 2.; r = 0. } }
-    { owner = 1; dice = 2; hex = { q = 1.; r = 1. } }
-]
+let startTerritories = 
+    [0.0..5.] |> List.collect (fun q ->
+    [0.0..5.] |> List.map (fun r ->
+        {   owner = (if q < 3. then 0 else 1)
+            dice = (if (q = 2. || q = 3.) && r % 2. = 0. then 2 else 1)
+            hex = { q = q; r = r } }))
 
 let generateMoves territories player canPass = 
     let isValid hexMatch dice target =

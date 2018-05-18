@@ -6,6 +6,7 @@ open View
 
 let initialModel = {
     source = None
+    reinforcements = 100
     gameTree = generateTree startTerritories 0 false
 }
 
