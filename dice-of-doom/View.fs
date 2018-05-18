@@ -21,6 +21,8 @@ let assets =
 
 let passButton = (50,50,150,60)
 
+let playerColours = [(0,Color.Red);(1,Color.Blue)] |> Map.ofList
+
 let private rectFrom (ox,oy) (x,y) = 
     (ox + x) - hexWidth/2.0 |> int, 
     (oy + y) - hexHeight/2.0 |> int, 
@@ -34,11 +36,16 @@ let calculateOffset board =
     (float sw - (List.max xplane - List.min xplane)) / 2.,
     (float sh - (List.max yplane - List.min yplane)) / 2.
 
+let private findAttack predicate moves =
+    moves |> Option.bind (List.tryPick 
+        (fun (m,_) -> match m with | Attack (a,t) when predicate (a,t) -> Some (a,t) | _ -> None))
+
 let getView runState model =
 
-    // hexes
-        // fading on select / options
-    // pass button visibility
+    let fadeIndex = 
+        let chunk = (runState.elapsed / 50.) % 50. |> int |> (*) 10
+        if chunk > 255 then 255 - (chunk - 255) |> byte else byte chunk
+
     // player turn display
     // game over / reset
 
@@ -49,16 +56,22 @@ let getView runState model =
     let texture = match hexTop with | Flat -> "hex_flat" | _ -> "hex_pointy"
 
     let hexDisplay = hexes |> List.collect (fun (territory,point) ->
+        let drawable = { assetKey = texture; destRect = rectFrom (ox,oy) point; sourceRect = None }
+        let colour = playerColours.[territory.owner]
+        let colour = 
+            match model.source with
+            | None when (findAttack (fun (a,_) -> a = territory) model.gameTree.moves) <> None ->
+                new Color (colour.R, colour.G, colour.B, fadeIndex)
+            | Some source when (findAttack (fun (a,t) -> a = source && t = territory) model.gameTree.moves) <> None ->
+                new Color (colour.R, colour.G, colour.B, fadeIndex)
+            | _ -> colour
+        let hexImage = ColouredImage (colour, drawable)
+
         let (px,py) = point
         let labelPos = (int (px + ox), int (py + oy))
-        let diceLabel = ColouredText (Color.White, { assetKey = "default";text = string territory.dice;position = labelPos;origin = Centre;scale=1. })
+        let diceLabel = ColouredText (Color.White, { assetKey = "default"; text = string territory.dice; position = labelPos; origin = Centre; scale=1. })
 
-        let drawable = { assetKey = texture; destRect = rectFrom (ox,oy) point; sourceRect = None }
-        match territory.owner with
-        | 0 -> 
-            [ColouredImage (Color.Red, drawable); diceLabel]
-        | _ -> 
-            [ColouredImage (Color.Blue, drawable); diceLabel])
+        [hexImage; diceLabel])
     
     let passButton = 
         let canPass = Option.bind (List.tryPick (fun (m,_) -> match m with | Pass -> Some m | _ -> None)) model.gameTree.moves 
