@@ -6,8 +6,7 @@ open View
 
 let initialModel = {
     source = None
-    reinforcements = 100
-    gameTree = generateTree startTerritories 0 false
+    gameTree = generateTree startTerritories 0 100 false
 }
 
 let rectContains (px,py) (x,y,w,h) = 

@@ -5,7 +5,6 @@ let hexTop = Pointy
 
 type DiceGameModel = {
     source: Territory option
-    reinforcements: int
     gameTree: GameTree
 } and Territory = {
     owner: int
@@ -14,6 +13,7 @@ type DiceGameModel = {
 } and GameTree = {
     board: Territory list
     player: int
+    reinforcements: int
     moves: (Move * GameTree) list option
 } and Move = 
     | Pass
@@ -29,42 +29,49 @@ let startTerritories =
             dice = (if (q = 2. || q = 3.) && r % 2. = 0. then 2 else 1)
             hex = { q = q; r = r } }))
 
-let generateMoves territories player canPass = 
+let generateAttacks territories player = 
     let isValid hexMatch dice target =
         target.hex = hexMatch && target.owner <> player && target.dice < dice
-    let attacks = 
-        territories 
-        |> List.filter (fun t -> t.owner = player)
-        |> List.collect (fun source -> 
-            let neighbours = Hex.neighbours hexTop source.hex
-            let validTargets = 
-                neighbours 
-                    |> List.map (fun h -> List.tryFind (isValid h source.dice) territories)
-                    |> List.choose id
-            validTargets |> List.map (fun target -> Attack (source,target)))
-    if canPass then [Pass] @ attacks else attacks
+    territories 
+    |> List.filter (fun t -> t.owner = player)
+    |> List.collect (fun source -> 
+        let neighbours = Hex.neighbours hexTop source.hex
+        let validTargets = 
+            neighbours 
+                |> List.map (fun h -> List.tryFind (isValid h source.dice) territories)
+                |> List.choose id
+        validTargets |> List.map (fun target -> Attack (source,target)))
 
-let generateOutcomes (territories:Territory list) (attacks: Move list) = 
-    attacks |> List.map (fun move -> 
-        match move with
-        | Pass -> (Pass, territories)
-        | Attack (source,target) ->
-            let aftermath = 
-                List.except [source;target] territories 
-                @ [{ source with dice = 1 };{ target with owner = source.owner; dice = source.dice - 1 }]
-            (Attack (source,target), aftermath))
+let attackAftermath (territories:Territory list) (source,target) = 
+    List.except [source;target] territories @ 
+        [{ source with dice = 1 }
+         { target with owner = source.owner; dice = source.dice - 1 }]
 
-let rec generateTree territories player canPass =
-    let options = generateMoves territories player canPass
-    if List.isEmpty options then { board = territories; player = player; moves = None }
+let reinforcePlayer player reinforcements territories = 
+    let (candidates,other) = territories |> List.partition (fun t -> t.owner = player && t.dice < maxDice)
+    let count = min (List.length candidates) reinforcements
+    let updated = List.take count candidates |> List.map (fun t -> { t with dice = t.dice + 1 })
+    (updated @ List.skip count candidates @ other, reinforcements - count)
+
+let rec generateTree territories player reinforcements canPass =
+    let attacks = generateAttacks territories player
+    let moves = if canPass then [Pass] @ attacks else attacks
+    if List.isEmpty moves then 
+        { board = territories; player = player; reinforcements = reinforcements; moves = None }
     else
         let nextPlayer = if player + 1 = players then 0 else player + 1
         {
             board = territories
             player = player
-            moves = generateOutcomes territories options 
-                |> List.map (fun (m,t) -> 
-                    match m with
-                    | Pass -> m,generateTree t nextPlayer false
-                    | _ -> m,generateTree t player true) |> Some
+            reinforcements = reinforcements
+            moves = moves 
+                |> List.map (fun move ->
+                    match move with
+                    | Pass -> 
+                        let (reinforced, remaining) = reinforcePlayer player reinforcements territories
+                        move, generateTree reinforced nextPlayer remaining false
+                    | Attack (s,t) -> 
+                        let aftermath = attackAftermath territories (s,t)
+                        move, generateTree aftermath player reinforcements true) 
+                |> Some
         }
