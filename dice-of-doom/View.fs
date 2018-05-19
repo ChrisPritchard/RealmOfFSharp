@@ -5,7 +5,7 @@ open Model
 open Microsoft.Xna.Framework
 
 let sw,sh = (1024,768)
-let hexSize = 64.
+let hexSize = 48.
 let hexWidth,hexHeight = Hex.width hexTop hexSize, Hex.height hexTop hexSize
 
 let resolution = Windowed (sw,sh)

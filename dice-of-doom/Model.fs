@@ -14,7 +14,7 @@ type DiceGameModel = {
     board: Territory list
     player: int
     reinforcements: int
-    moves: (Move * GameTree) list option
+    moves: (Move * (Unit -> GameTree)) list option
 } and Move = 
     | Pass
     | Attack of Territory * Territory
@@ -22,11 +22,15 @@ type DiceGameModel = {
 let players = 2
 let maxDice = 3
 
+let random = new System.Random (0)
+let randomDice () = random.Next(1, maxDice + 1)
+
+let gridSize = 6.
 let startTerritories = 
-    [0.0..5.] |> List.collect (fun q ->
-    [0.0..5.] |> List.map (fun r ->
-        {   owner = (if q < 3. then 0 else 1)
-            dice = (if (q = 2. || q = 3.) && r % 2. = 0. then 2 else 1)
+    [0.0..gridSize - 1.] |> List.collect (fun q ->
+    [0.0..gridSize - 1.] |> List.map (fun r ->
+        {   owner = (if q < gridSize/2. then 0 else 1)
+            dice = randomDice ()
             hex = { q = q; r = r } }))
 
 let generateAttacks territories player = 
@@ -69,9 +73,9 @@ let rec generateTree territories player reinforcements canPass =
                     match move with
                     | Pass -> 
                         let (reinforced, remaining) = reinforcePlayer player reinforcements territories
-                        move, generateTree reinforced nextPlayer remaining false
+                        move, fun () -> generateTree reinforced nextPlayer remaining false
                     | Attack (s,t) -> 
                         let aftermath = attackAftermath territories (s,t)
-                        move, generateTree aftermath player reinforcements true) 
+                        move, fun () -> generateTree aftermath player reinforcements true) 
                 |> Some
         }

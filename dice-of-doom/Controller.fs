@@ -4,10 +4,12 @@ open Hex
 open Model
 open View
 
+let stopWatch = System.Diagnostics.Stopwatch.StartNew ()
 let initialModel = {
     source = None
     gameTree = generateTree startTerritories 0 100 false
 }
+printfn "Generation Time: %ims" stopWatch.ElapsedMilliseconds
 
 let rectContains (px,py) (x,y,w,h) = 
     px >= x && py >= y && px <= x + w && py <= y + h
@@ -28,13 +30,13 @@ let playerMove (runState:RunState) gameModel moves =
     if fst runState.mouse.pressed then
         match canPass with
         | Some gt when rectContains (mx,my) View.passButton -> 
-            { gameModel with source = None; gameTree = gt; }
+            { gameModel with source = None; gameTree = gt (); }
         | _ -> 
             match overAttackSource with
             | Some ((a,_),_) -> { gameModel with source = Some a }
             | None when gameModel.source <> None -> 
                 match overAttackTarget with
-                | Some (_,gt) -> { gameModel with source = None; gameTree = gt }
+                | Some (_,gt) -> { gameModel with source = None; gameTree = gt () }
                 | None -> gameModel
             | None -> gameModel
     else gameModel
