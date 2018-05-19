@@ -96,16 +96,20 @@ let getView runState model =
                 |> fst
             let winnerName = player winner |> fst
             [
-                Text { 
-                assetKey = "default"
-                text = "Game Over!"
-                position = (sw/2,sh/2)
-                origin = Centre;scale=2. }
-                Text { 
-                assetKey = "default"
-                text = sprintf "%s Wins" winnerName
-                position = (sw/2,sh/2 + 100)
-                origin = Centre;scale=1. }
+                ColouredImage (Color.Black, { 
+                    assetKey = "white"
+                    destRect = (sw/2-380,sh/2-60,760,200)
+                    sourceRect = None })
+                ColouredText (Color.White, { 
+                    assetKey = "default"
+                    text = "Game Over!"
+                    position = (sw/2,sh/2)
+                    origin = Centre;scale=2. })
+                ColouredText (Color.White, { 
+                    assetKey = "default"
+                    text = sprintf "%s Wins" winnerName
+                    position = (sw/2,sh/2 + 100)
+                    origin = Centre;scale=1. })
             ]
         | _ -> [Text { 
             assetKey = "default"
