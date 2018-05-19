@@ -3,11 +3,34 @@ open GameCore
 open Hex
 open Model
 open View
+open Microsoft.Xna.Framework
+
+
+let gameOptions = {
+    maxDice = 4
+    players = 
+    [
+        "Red Player", Color.Red
+        "Blue Player", Color.Blue
+    ]
+}
+
+let random = new System.Random (0)
+let randomDice () = random.Next(1, gameOptions.maxDice + 1)
+
+let gridSize = 6.
+let startTerritories = 
+    [0.0..gridSize - 1.] |> List.collect (fun q ->
+    [0.0..gridSize - 1.] |> List.map (fun r ->
+        {   owner = (if q < gridSize/2. then 0 else 1)
+            dice = randomDice ()
+            hex = { q = q; r = r } }))
 
 let stopWatch = System.Diagnostics.Stopwatch.StartNew ()
 let initialModel = {
     source = None
-    gameTree = generateTree startTerritories 0 100 false
+    gameOptions = gameOptions
+    gameTree = generateTree gameOptions startTerritories 0 100 false
 }
 printfn "Generation Time: %ims" stopWatch.ElapsedMilliseconds
 

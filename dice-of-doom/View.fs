@@ -21,8 +21,6 @@ let assets =
 
 let passButton = (50,50,150,60)
 
-let playerColours = [(0,Color.Red);(1,Color.Blue)] |> Map.ofList
-
 let private rectFrom (ox,oy) (x,y) = 
     (ox + x) - hexWidth/2.0 |> int, 
     (oy + y) - hexHeight/2.0 |> int, 
@@ -52,9 +50,11 @@ let getView runState model =
         |> List.map (fun t -> t, Hex.toPixel hexTop hexSize t.hex)
     let texture = match hexTop with | Flat -> "hex_flat" | _ -> "hex_pointy"
 
+    let player index = model.gameOptions.players.[index]
+
     let hexDisplay = hexes |> List.collect (fun (territory,point) ->
         let drawable = { assetKey = texture; destRect = rectFrom (ox,oy) point; sourceRect = None }
-        let colour = playerColours.[territory.owner]
+        let colour = player territory.owner |> snd
         let colour = 
             match model.source with
             | None when (findAttack (fun (a,_) -> a = territory) model.gameTree.moves) <> None ->
@@ -94,6 +94,7 @@ let getView runState model =
                 |> List.map (fun (o,tl) -> o,List.length tl)
                 |> List.maxBy (fun (_,l) -> l)
                 |> fst
+            let winnerName = player winner |> fst
             [
                 Text { 
                 assetKey = "default"
@@ -102,13 +103,13 @@ let getView runState model =
                 origin = Centre;scale=2. }
                 Text { 
                 assetKey = "default"
-                text = sprintf "Player %i Wins" winner
+                text = sprintf "%s Wins" winnerName
                 position = (sw/2,sh/2 + 100)
                 origin = Centre;scale=1. }
             ]
         | _ -> [Text { 
             assetKey = "default"
-            text = sprintf "Player %i's Turn" model.gameTree.player
+            text = sprintf "%s's Turn" (player model.gameTree.player |> fst)
             position = (sw/2,100)
             origin = Centre;scale=1. }]
 
