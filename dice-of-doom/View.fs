@@ -3,6 +3,7 @@ open GameCore
 open Hex
 open Model
 open Microsoft.Xna.Framework
+open Model
 
 let sw,sh = (1024,768)
 let hexSize = 48.
@@ -88,13 +89,8 @@ let getView runState model =
     let text = 
         match model.gameTree.moves with
         | None -> 
-            let topScores = 
-                score model.gameTree.board
-                |> List.groupBy (fun (_,s) -> s)
-                |> List.map (fun (s,lst) -> s, List.map (fun (o,_) -> o) lst)
-                |> List.head |> snd
             let winner = 
-                match topScores with 
+                match winners model.gameTree.board with 
                 | [o] -> sprintf "%s Wins" (player o |> fst) 
                 | _ -> "Draw"
             [
