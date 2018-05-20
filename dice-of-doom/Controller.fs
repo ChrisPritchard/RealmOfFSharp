@@ -3,6 +3,7 @@ open GameCore
 open Hex
 open Model
 open View
+open AI
 open Microsoft.Xna.Framework
 
 
@@ -10,8 +11,8 @@ let gameOptions = {
     maxDice = 4
     players = 
     [
-        "Red Player", Color.Red
-        "Blue Player", Color.Blue
+        "Red Player", Color.Red, Human
+        "Blue Player", Color.Blue, AI
     ]
 }
 
@@ -28,8 +29,9 @@ let startTerritories =
 
 let stopWatch = System.Diagnostics.Stopwatch.StartNew ()
 let initialModel = {
-    source = None
     gameOptions = gameOptions
+    lastAIAction = 0.
+    source = None
     gameTree = generateTree gameOptions startTerritories 0 100 false
 }
 printfn "Generation Time: %ims" stopWatch.ElapsedMilliseconds
@@ -64,6 +66,7 @@ let playerMove (runState:RunState) gameModel moves =
             | None -> gameModel
     else gameModel
 
+
 let updateModel runState currentModel = 
     match currentModel with
     | None -> Some initialModel
@@ -71,4 +74,7 @@ let updateModel runState currentModel =
         match model.gameTree.moves with
         | None -> currentModel
         | Some moves -> 
-            playerMove runState model moves |> Some
+            let (_,_,playerType) = model.gameOptions.players.[model.gameTree.player]
+            match playerType with
+            | Human -> playerMove runState model moves |> Some
+            | AI -> aiMove runState model moves |> Some

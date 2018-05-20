@@ -39,6 +39,14 @@ let private findAttack predicate moves =
     moves |> Option.bind (List.tryPick 
         (fun (m,_) -> match m with | Attack (a,t) when predicate (a,t) -> Some (a,t) | _ -> None))
 
+let private playerColour model index = 
+    let (_,colour,_) = model.gameOptions.players.[index]
+    colour
+
+let private playerName model index = 
+    let (name,_,_) = model.gameOptions.players.[index]
+    name
+
 let getView runState model =
 
     let fadeIndex = 
@@ -51,11 +59,9 @@ let getView runState model =
         |> List.map (fun t -> t, Hex.toPixel hexTop hexSize t.hex)
     let texture = match hexTop with | Flat -> "hex_flat" | _ -> "hex_pointy"
 
-    let player index = model.gameOptions.players.[index]
-
     let hexDisplay = hexes |> List.collect (fun (territory,point) ->
         let drawable = { assetKey = texture; destRect = rectFrom (ox,oy) point; sourceRect = None }
-        let colour = player territory.owner |> snd
+        let colour = playerColour model territory.owner
         let colour = 
             match model.source with
             | None when (findAttack (fun (a,_) -> a = territory) model.gameTree.moves) <> None ->
@@ -91,7 +97,7 @@ let getView runState model =
         | None -> 
             let winner = 
                 match winners model.gameTree.board with 
-                | [o] -> sprintf "%s Wins" (player o |> fst) 
+                | [o] -> sprintf "%s Wins" (playerName model o) 
                 | _ -> "Draw"
             [
                 ColouredImage (Color.Black, { 
@@ -111,7 +117,7 @@ let getView runState model =
             ]
         | _ -> [Text { 
             assetKey = "default"
-            text = sprintf "%s's Turn" (player model.gameTree.player |> fst)
+            text = sprintf "%s's Turn" (playerName model model.gameTree.player)
             position = (sw/2,100)
             origin = Centre;scale=1. }]
 

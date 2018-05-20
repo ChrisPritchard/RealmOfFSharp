@@ -1,30 +1,22 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Winexe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
-    <MonoGameContentReference Include="**\*.mgcb" />
+    <ProjectReference Include="..\game-core\game-core.fsproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Include="Hex.fs" />
     <Compile Include="Model.fs" />
     <Compile Include="View.fs" />
+    <Compile Include="AI.fs" />
     <Compile Include="Controller.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.DotNet.ILCompiler" Version="1.0.0-alpha-*" />
     <PackageReference Include="MonoGame.Content.Builder" Version="3.7.0.4" />
     <PackageReference Include="MonoGame.Framework.DesktopGL.Core" Version="3.7.0.7" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\game-core\game-core.fsproj" />
-  </ItemGroup>
-
 </Project>

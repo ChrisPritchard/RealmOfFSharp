@@ -5,8 +5,9 @@ open Microsoft.Xna.Framework
 let hexTop = Pointy
 
 type DiceGameModel = {
-    source: Territory option
     gameOptions: GameOptions
+    lastAIAction: float
+    source: Territory option
     gameTree: GameTree
 } and Territory = {
     owner: int
@@ -14,8 +15,10 @@ type DiceGameModel = {
     hex: Hex
 } and GameOptions = {
     maxDice: int
-    players: (string * Color) list
-} and GameTree = {
+    players: (string * Color * PlayerType) list
+} and PlayerType = 
+    | Human | AI
+  and GameTree = {
     board: Territory list
     player: int
     reinforcements: int
