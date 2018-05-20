@@ -12,3 +12,7 @@ The games were implemented in the following order:
 - dice-of-doom
 
 Each has increasing complexity, and from -ui onwards, involved a reference to the game-core project, which is an F# wrapper of MonoGame. As the games improved in depth, game-core was further refined to support more functionality in a consistent style.
+
+### Hungry Henry / Distributed Guess my Number etc
+
+The final games in the Realm of Racket book are about distributed programming. This is not an area that interests me for game development, at least at the moment, and unlike the other games the code required in F#/MonoGame is completely different than that used by Racket, so I haven't bothered to build implementations at the time of writing. I might come back and do them later, maybe.
