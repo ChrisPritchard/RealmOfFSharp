@@ -75,8 +75,8 @@ let rec generateTree gameOptions territories player reinforcements canPass =
                 |> Some
         }
 
-let winners territories = 
-    territories 
+let winners board = 
+    board 
         |> List.groupBy (fun o -> o.owner)
         |> List.map (fun (o,lst) -> (o, List.length lst))
         |> List.groupBy (fun (_,score) -> score)
