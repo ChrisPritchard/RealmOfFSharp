@@ -88,13 +88,15 @@ let getView runState model =
     let text = 
         match model.gameTree.moves with
         | None -> 
+            let topScores = 
+                score model.gameTree.board
+                |> List.groupBy (fun (_,s) -> s)
+                |> List.map (fun (s,lst) -> s, List.map (fun (o,_) -> o) lst)
+                |> List.head |> snd
             let winner = 
-                model.gameTree.board
-                |> List.groupBy (fun t -> t.owner)
-                |> List.map (fun (o,tl) -> o,List.length tl)
-                |> List.maxBy (fun (_,l) -> l)
-                |> fst
-            let winnerName = player winner |> fst
+                match topScores with 
+                | [o] -> sprintf "%s Wins" (player o |> fst) 
+                | _ -> "Draw"
             [
                 ColouredImage (Color.Black, { 
                     assetKey = "white"
@@ -107,7 +109,7 @@ let getView runState model =
                     origin = Centre;scale=2. })
                 ColouredText (Color.White, { 
                     assetKey = "default"
-                    text = sprintf "%s Wins" winnerName
+                    text = sprintf "%s Wins" winner
                     position = (sw/2,sh/2 + 100)
                     origin = Centre;scale=1. })
             ]
