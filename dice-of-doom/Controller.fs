@@ -55,7 +55,7 @@ let playerMove (runState:RunState) gameModel moves =
     if fst runState.mouse.pressed then
         match canPass with
         | Some gt when rectContains (mx,my) View.passButton -> 
-            { gameModel with source = None; gameTree = gt (); }
+            { gameModel with lastAIAction = runState.elapsed; source = None; gameTree = gt (); }
         | _ -> 
             match overAttackSource with
             | Some ((a,_),_) -> { gameModel with source = Some a }
