@@ -8,3 +8,5 @@ Differs in a few ways from the racket version:
 - I am not using memoization, mainly because it doesnt really add much speed wise and is a little tricky to do in an immutable fashion
 
 Not sure if I got the rules exactly right, but it seems to work reasonably well. Of note is the Hex.fs module, which contains a set of types and methods that are translated from the truly excellent tutorial here https://www.redblobgames.com/grids/hexagons/
+
+Hex images were created by me. The mouse pointer is from here: https://opengameart.org/content/iron-plague-pointercursor
