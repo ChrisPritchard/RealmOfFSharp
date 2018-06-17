@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
@@ -12,6 +12,8 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "game-core", "game-core\game-core.fsproj", "{66D18198-FC63-4524-92C0-C0CADA18B65C}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "orc-battle", "orc-battle\orc-battle.fsproj", "{5DCE0D5E-2021-4F01-8DA9-3C53C65D0FB2}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "dice-of-doom", "dice-of-doom\dice-of-doom.fsproj", "{7A50F308-712B-4F29-87C2-6DD8A5114A20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,5 +88,17 @@ Global
 		{5DCE0D5E-2021-4F01-8DA9-3C53C65D0FB2}.Release|x64.Build.0 = Release|x64
 		{5DCE0D5E-2021-4F01-8DA9-3C53C65D0FB2}.Release|x86.ActiveCfg = Release|x86
 		{5DCE0D5E-2021-4F01-8DA9-3C53C65D0FB2}.Release|x86.Build.0 = Release|x86
+		{7A50F308-712B-4F29-87C2-6DD8A5114A20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A50F308-712B-4F29-87C2-6DD8A5114A20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A50F308-712B-4F29-87C2-6DD8A5114A20}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7A50F308-712B-4F29-87C2-6DD8A5114A20}.Debug|x64.Build.0 = Debug|Any CPU
+		{7A50F308-712B-4F29-87C2-6DD8A5114A20}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7A50F308-712B-4F29-87C2-6DD8A5114A20}.Debug|x86.Build.0 = Debug|Any CPU
+		{7A50F308-712B-4F29-87C2-6DD8A5114A20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A50F308-712B-4F29-87C2-6DD8A5114A20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A50F308-712B-4F29-87C2-6DD8A5114A20}.Release|x64.ActiveCfg = Release|Any CPU
+		{7A50F308-712B-4F29-87C2-6DD8A5114A20}.Release|x64.Build.0 = Release|Any CPU
+		{7A50F308-712B-4F29-87C2-6DD8A5114A20}.Release|x86.ActiveCfg = Release|Any CPU
+		{7A50F308-712B-4F29-87C2-6DD8A5114A20}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
