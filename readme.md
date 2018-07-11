@@ -19,5 +19,6 @@ The final games in the Realm of Racket book are about distributed programming. T
 
 ## Note on development sequence
 
-This project was the first developed after my original __Monogame F#__ template here: https://github.com/ChrisPritchard/FSharpMonogameTemplate
-The next project developed after this, and using the lessons learned, was __Battleship__ here: https://github.com/ChrisPritchard/Battleship
+This project was the first developed after my original __Monogame F#__ template [here](https://github.com/ChrisPritchard/FSharpMonogameTemplate).
+
+The next project developed after this, and using the lessons learned, was __Battleship__ [here](https://github.com/ChrisPritchard/Battleship).
